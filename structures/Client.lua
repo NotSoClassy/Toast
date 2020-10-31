@@ -1,6 +1,6 @@
 local discordia = require('discordia')
 
-local class, Client = discordia.class, discordia.Client
+local class, enums, Client = discordia.class, discordia.enums, discordia.Client
 local Toast, get = class('Toast', Client)
 
 local validOptions = {
@@ -33,6 +33,7 @@ function Toast:__init(allOptions)
     self:on('messageCreate', function(msg)
         if not msg.guild and options.allowDMs == false then return end
         if msg.author.bot then return end
+        if msg.guild and not msg.guild:getMember(msg.client.user.id):hasPermission(enums.sendMessages) then return end
         local prefix
         for _, pre in pairs(self._prefix) do
             if string.match(msg.content, '^'..pre) then
