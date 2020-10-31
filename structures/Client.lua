@@ -1,10 +1,11 @@
 local discordia = require('discordia')
 
-local class, enums, Client = discordia.class, discordia.enums, discordia.Client
-local Toast, get, set = class('Toast', Client)
+local class, Client = discordia.class, discordia.enums, discordia.Client
+local Toast, get = class('Toast', Client)
 
 local validOptions = {
-    prefix = 'string'
+    prefix = 'string',
+    allowDMs = 'boolean'
 }
 
 local function parseOptions(options)
@@ -30,6 +31,7 @@ function Toast:__init(options)
     self._aliases = {}
     self._uptime = discordia.Stopwatch()
     self:on('messageCreate', function(msg)
+        if not msg.guild and options.allowDMs == false then return end
         if msg.author.bot then return end
         local prefix
         for _, pre in pairs(self._prefix) do
@@ -56,14 +58,14 @@ end
 
 function Toast:login(token, status)
     self:run('Bot '..token)
-    return status and self:setStatus(status) or self._commands[help] and self:setStatus(self._prefix[1]..'help')
+    return status and self:setStatus(status) or self._commands['help'] and self:setStatus(self._prefix[1]..'help')
 end
 
 function Toast:addCommand(command)
     self._commands[command.name] = command
     for _, alias in pairs(command.aliases) do
         self._aliases[alias] = setmetatable({}, {__index = command})
-    end    
+    end
     self:debug('Command '..command.name..' has been added')
 end
 
