@@ -1,6 +1,6 @@
   return {
     name = "Toast",
-    version = "0.0.1",
+    version = "1.0.0",
     description = "Framework for Discordia",
     tags = { "discordia", "discord" },
     license = "MIT",
