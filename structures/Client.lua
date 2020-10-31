@@ -27,14 +27,16 @@ function Toast:__init(options)
     Client.__init(self, discordiaOptions)
     self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
     self._commands = {}
+    self._aliases = {}
     self._uptime = discordia.Stopwatch()
     self:on('messageCreate', function(msg)
         if msg.author.bot then return end
         local prefix
         for _, pre in pairs(self._prefix) do
-            if not string.match(msg.content, '^'..pre) then return end
-            prefix = pre
-            break
+            if string.match(msg.content, '^'..pre) then
+                prefix = pre
+                break
+            end
         end
         if not prefix then return end
         local command, arg = string.match(msg.cleanContent, '^'..prefix..'(%S+)%s*(.*)')
@@ -43,7 +45,7 @@ function Toast:__init(options)
         for arg in string.gmatch(arg, '%S+') do
             table.insert(args, arg)
         end
-        command = self._commands[string.lower(command)]
+        command = self._commands[string.lower(command)] or self._aliases[string.lower(command)]
         if not command then return end
         local success, err = pcall(command.execute, msg, args)
         if not success then
@@ -58,10 +60,18 @@ end
 
 function Toast:addCommand(command)
     self._commands[command.name] = command
+    for _, alias in pairs(command.aliases) do
+        self._aliases[alias] = setmetatable({}, {__index = command})
+    end    
     self:debug('Command '..command.name..' has been added')
 end
 
-function toast:removeCommand(name)
+function Toast:removeCommand(name)
+    local command = self._commands[name]
+    if not command then return end
+    for _, alias in pairs(command.aliases) do
+        self._aliases[alias] = nil
+    end
     self._commands[name] = nil
     self:debug('Command '..name..' has been removed')
 end
