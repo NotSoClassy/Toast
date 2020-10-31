@@ -31,7 +31,7 @@ function Toast:__init(options)
     self:on('messageCreate', function(msg)
         if msg.author.bot then return end
         local prefix
-        for _, pre in pairs(self.prefix) do
+        for _, pre in pairs(self._prefix) do
             if not string.match(msg.content, '^'..pre) then return end
             prefix = pre
             break
@@ -43,7 +43,7 @@ function Toast:__init(options)
         for arg in string.gmatch(arg, '%S+') do
             table.insert(args, arg)
         end
-        command = self.commands[string.lower(command)]
+        command = self._commands[string.lower(command)]
         if not command then return end
         local success, err = pcall(command.execute, msg, args)
         if not success then
@@ -59,6 +59,11 @@ end
 function Toast:addCommand(command)
     self._commands[command.name] = command
     self:debug('Command '..command.name..' has been added')
+end
+
+function toast:removeCommand(name)
+    self._commands[name] = nil
+    self:debug('Command '..name..' has been removed')
 end
 
 function get.prefix(self) return self._prefix end
