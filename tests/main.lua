@@ -1,6 +1,6 @@
 local config = require('./config')
 local toast = require('../init')
-local client = toast.Client{
+local client = toast.Client {
     prefix = 'test '
 }
 
