@@ -3,3 +3,4 @@ gateway.json
 start.bat
 *.log
 config.lua
+.vscode
