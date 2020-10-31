@@ -1,6 +1,6 @@
 local discordia = require('discordia')
 
-local class, Client = discordia.class, discordia.enums, discordia.Client
+local class, Client = discordia.class, discordia.Client
 local Toast, get = class('Toast', Client)
 
 local validOptions = {
@@ -23,8 +23,8 @@ local function parseOptions(options)
     return toastOptions, discordiaOptions
 end
 
-function Toast:__init(options)
-    local options, discordiaOptions = parseOptions(options)
+function Toast:__init(allOptions)
+    local options, discordiaOptions = parseOptions(allOptions)
     Client.__init(self, discordiaOptions)
     self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
     self._commands = {}
@@ -41,10 +41,10 @@ function Toast:__init(options)
             end
         end
         if not prefix then return end
-        local command, arg = string.match(msg.cleanContent, '^'..prefix..'(%S+)%s*(.*)')
+        local command, msgArg = string.match(msg.cleanContent, '^'..prefix..'(%S+)%s*(.*)')
         if not command then return end
         local args = {}
-        for arg in string.gmatch(arg, '%S+') do
+        for arg in string.gmatch(msgArg, '%S+') do
             table.insert(args, arg)
         end
         command = self._commands[string.lower(command)] or self._aliases[string.lower(command)]
