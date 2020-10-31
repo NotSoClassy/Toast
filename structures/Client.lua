@@ -54,8 +54,9 @@ function Toast:__init(options)
     end)
 end
 
-function Toast:login(token)
+function Toast:login(token, status)
     self:run('Bot '..token)
+    return status and self:setStatus(status) or self._commands[help] and self:setStatus(self._prefix[1]..'help')
 end
 
 function Toast:addCommand(command)
