@@ -20,7 +20,7 @@ embed.execute = function(msg)
         :addField('NAME', 'VALUE', true)
         :setTitle('TITLE')
         :setDescription(string.rep('a', 2050))
-    msg:reply(msgEmbed)
+    msgEmbed:send(msg.channel)
 end
 client:addCommand(embed)
 
