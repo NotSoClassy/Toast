@@ -1,6 +1,5 @@
 deps
-gateway.json
-start.bat
 *.log
 config.lua
 .vscode
+tests
