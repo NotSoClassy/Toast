@@ -1,7 +1,7 @@
 local discordia = require('discordia')
 local constants = require('../constants')
 
-local class = discordia.class
+local class, enums = discordia.class, discordia.enums
 local Embed, get = class('Embed')
 
 local limits = {
@@ -28,6 +28,15 @@ function Embed:__init()
 		author = {},
 		fields = {}
 	}
+end
+
+function Embed:send(chnl)
+	if not chnl then return end
+	if not chnl.guild then return chnl:send(self) end
+	if not chnl.guild.me:hasPermission(enums.permission.embedLinks) then
+		return chnl:send('I am missing permissions to send embeds')
+	end
+	return chnl:send(self)
 end
 
 function Embed:setTitle(str)
