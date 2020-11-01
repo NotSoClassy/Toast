@@ -1,4 +1,8 @@
-local enums = require('discordia').enums.permission
+local discordia = require('discordia')
+
+local enums = discordia.enums.permission
+local extensions = discordia.extensions
+
 local util = {}
 local roles = {
    administrator = {'administrator'},
@@ -133,7 +137,7 @@ function util.checkPerm(member, channel, permissions)
          local needed = {}
          for roleName, perms in pairs(roles) do
             for _, perm in pairs(perms) do
-               if table.search(perm, permissions) then
+               if extensions.table.search(perm, permissions) then
                   table.insert(needed, roleName)
                end
             end
