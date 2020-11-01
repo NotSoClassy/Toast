@@ -29,7 +29,7 @@ local function search(tbl, v)
 end
 
 function Toast:__init(allOptions)
-   local options, discordiaOptions = parseOptions(allOptions)
+   local options, discordiaOptions = parseOptions(allOptions or {})
    Client.__init(self, discordiaOptions)
 
    self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
