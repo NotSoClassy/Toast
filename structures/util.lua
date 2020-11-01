@@ -1,37 +1,43 @@
-local permission
-permission = require('discordia').enums.permission
-local enums = permission
+local enums = require('discordia').enums.permission
 local util = {}
 local roles = {
    administrator = {'administrator'},
    moderator = {'kickMembers', 'banMembers', 'manageMessages', 'manageNicknames', 'mentionEveryone'},
    ['bot manager'] = {'manageGuild', 'manageRoles'}
 }
+
 local s = 1000
 local m = s * 60
 local h = m * 60
 local d = h * 24
 local w = d * 7
 local y = d * 365.25
-util.years = function(years)
+
+function util.years(years)
    return years * y
 end
-util.weeks = function(weeks)
+
+function util.weeks(weeks)
    return weeks * w
 end
-util.days = function(days)
+
+function util.days(days)
    return days * d
 end
-util.hours = function(hours)
+
+function util.hours(hours)
    return hours * h
 end
-util.minutes = function(minutes)
+
+function util.minutes(minutes)
    return minutes * m
 end
-util.seconds = function(seconds)
+
+function util.seconds(seconds)
    return seconds * s
 end
-util.formatLong = function(milliseconds)
+
+function util.formatLongfunction(milliseconds)
    local msAbs = math.abs(milliseconds)
    if msAbs >= d then
       return util.plural(milliseconds, msAbs, d, 'day')
@@ -47,11 +53,13 @@ util.formatLong = function(milliseconds)
    end
    return tostring(milliseconds) .. ' ms'
 end
-util.plural = function(ms, msAbs, n, name)
+
+function util.plural(ms, msAbs, n, name)
    local isPlural = (msAbs >= n * 1.5)
    return tostring(math.floor((ms / n) + 0.5)) .. ' ' .. tostring(name) .. tostring((isPlural and 's') or '')
 end
-util.bulkDelete = function(msg, messages)
+
+function util.bulkDelete(msg, messages)
    if type(messages) == 'table' then
       local messageIDs = {}
       for _, m in pairs(messages) do
@@ -70,13 +78,15 @@ util.bulkDelete = function(msg, messages)
       return util.bulkDelete(msg, msg.channel:getMessages(messages))
    end
 end
-util.compareRoles = function(role1, role2)
+
+function util.compareRoles(role1, role2)
    if role1.position == role2.position then
       return role2.id - role1.id
    end
    return role1.position - role2.position
 end
-util.manageable = function(member)
+
+function util.manageable(member)
    if member.user.id == member.guild.ownerId then
       return false
    end
@@ -88,7 +98,8 @@ util.manageable = function(member)
    end
    return util.compareRoles(member.guild.me.highestRole, member.highestRole) > 0
 end
-util.checkPerm = function(member, channel, permissions)
+
+function util.checkPerm(member, channel, permissions)
    if not (type(permissions) == 'table') then
       permissions = {permissions}
    end
@@ -141,4 +152,5 @@ util.checkPerm = function(member, channel, permissions)
       end
    end
 end
+
 return util
