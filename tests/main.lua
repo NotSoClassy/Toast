@@ -5,7 +5,7 @@ local client = toast.Client {
 }
 local ping = toast.Command('ping')
 
-ping.execute = function(msg, args)
+ping.execute = function(msg)
     msg:reply('Pong!')
 end
 ping.aliases = {'pong', 'pping'}
@@ -14,13 +14,13 @@ client:addCommand(ping)
 
 local embed = toast.Command('embed')
 
-embed.execute = function(msg, args)
-    local embed = toast.Embed()
+embed.execute = function(msg)
+    local msgEmbed = toast.Embed()
         :setColor('random')
         :addField('NAME', 'VALUE', true)
         :setTitle('TITLE')
         :setDescription(string.rep('a', 2050))
-    print(msg:reply(embed))
+    msg:reply(msgEmbed)
 end
 client:addCommand(embed)
 
