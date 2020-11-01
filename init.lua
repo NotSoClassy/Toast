@@ -3,6 +3,7 @@ assert(success, 'Toast requires Discordia to function\n' .. tostring(err))
 
 return {
    package = require('./package'),
+   utils = require('./util'),
    Client = require('./structures/Client'),
    Command = require('./structures/Command'),
    Embed = require('./structures/Embed')
