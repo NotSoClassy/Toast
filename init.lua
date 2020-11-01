@@ -1,9 +1,9 @@
 local success, err = pcall(require, 'discordia')
-assert(success, 'Toast requires Discordia to function\n'..tostring(err))
+assert(success, 'Toast requires Discordia to function\n' .. tostring(err))
 
 return {
-    package = require('./package'),
-    Client = require('./structures/Client'),
-    Command = require('./structures/Command'),
-    Embed = require('./structures/Embed')
+   package = require('./package'),
+   Client = require('./structures/Client'),
+   Command = require('./structures/Command'),
+   Embed = require('./structures/Embed')
 }
