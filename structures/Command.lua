@@ -16,7 +16,7 @@ function set.example(self, str)
    self._example = str
 end
 function set.description(self, str)
-   self._example = str
+   self._description = str
 end
 function set.execute(self, fn)
    self._execute = fn
