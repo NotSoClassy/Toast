@@ -1,10 +1,10 @@
 local discordia = require('discordia')
+local util = require('../util')
 
 local class, enums, Client = discordia.class, discordia.enums, discordia.Client
 local Toast, get = class('Toast', Client)
 
-local validOptions = {prefix = 'string', allowDMs = 'boolean'}
-
+local validOptions = {prefix = 'string'}
 local function parseOptions(options)
    local discordiaOptions = {}
    local toastOptions = {}
@@ -37,7 +37,7 @@ function Toast:__init(allOptions)
    self._uptime = discordia.Stopwatch()
 
    self:on('messageCreate', function(msg)
-      if not msg.guild and options.allowDMs == false then
+      if not msg.guild then
          return
       end
 
@@ -86,11 +86,24 @@ function Toast:__init(allOptions)
          return
       end
 
+      if command:onCooldown(msg.author.id) then
+         local _, time = command:onCooldown(msg.author.id)
+         return msg:reply {
+            embed = {
+               title = 'Slow down you\'re on cooldown',
+               description = 'Please wait ' .. util.formatLongfunction(time),
+               color = 16711731
+            }
+         }
+      end
+
       local success, err = pcall(command.execute, msg, args)
 
       if not success then
          self:error('ERROR WITH ' .. command.name .. ': ' .. err)
          msg:reply('Failed to run command')
+      else
+         command.startCooldown(msg.author.id)
       end
    end)
 end
