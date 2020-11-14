@@ -2,35 +2,56 @@ local discordia = require('discordia')
 
 local class = discordia.class
 local Command, get, set = class('Command')
-local cooldowns = {}
 
-function Command:__init(name)
-   self._name = name
-   self._example = name .. ' [any]'
-   self._description = 'The ' .. name .. ' command'
-   self._execute = function()
+local function hookInit(hooks)
+   hooks = hooks or {}
+   local emptyFunction = function() end
+
+   for i, v in pairs(hooks) do
+      assert(type(v) == 'function', 'All hooks must be a function (You set ' .. i .. ' to a ' .. type(v) .. ')')
    end
-   self._aliases = {}
-   self._cooldown = 0
+
+   hooks.preCommand = hooks.preCommand or emptyFunction
+   hooks.postCommand = hooks.postCommand or emptyFunction
+
+   return setmetatable(hooks, {__newindex = function(tbl, i, v)
+      assert(type(v) == 'function', 'All hooks must be a function (You set ' .. i .. ' to a ' .. type(v) .. ')')
+      tbl[i] = v
+   end})
 end
 
-function Command.startCooldown(id)
-   cooldowns[id] = os.time() * 1000
+function Command:__init(name, options)
+   options = options or nil
+   self._cooldowns = {}
+   self._name = name
+   self._example = options.example or name .. ' [any]'
+   self._description = options.example or 'The ' .. name .. ' command'
+   self._cooldown = options.cooldown or 0
+   self._execute = options.execute or function() end
+   self._aliases = options.aliases or {}
+   self._allowDMS = options.allowDMS or false
+   self._hooks = hookInit(options.hooks)
+end
+
+function Command:startCooldown(id)
+   self._cooldowns[id] = os.time() * 1000
 end
 
 function Command:onCooldown(id)
-   local start = cooldowns[id]
+   local start = self._cooldowns[id]
    if not start then
       return false
    end
    local now = os.time() * 1000
    if (start + self._cooldown) <= now then
-      cooldowns[id] = nil
+      self._cooldowns[id] = nil
       return false
    else
       return true, (start - (now - self._cooldown))
    end
 end
+
+-- Setters
 
 function set.example(self, str)
    self._example = str
@@ -48,6 +69,12 @@ end
 function set.cooldown(self, cd)
    self._cooldown = cd
 end
+
+function set.allowDMS(self, bool)
+   self._allowDMS = bool
+end
+
+-- Getters
 
 function get.name(self)
    return self._name
@@ -71,6 +98,14 @@ end
 
 function get.cooldown(self)
    return self._cooldown
+end
+
+function get.allowDMS(self)
+   return self._allowDMS
+end
+
+function get.hooks(self)
+   return self._hooks
 end
 
 return Command
