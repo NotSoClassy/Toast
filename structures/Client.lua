@@ -6,6 +6,7 @@ local Toast, get = class('Toast', Client)
 
 local validOptions = {
    prefix = {'string', 'table'},
+   owner = {'string', 'table'},
    defaultHelp = 'boolean'
 }
 
@@ -110,7 +111,7 @@ function Toast:__init(allOptions)
 
       local success, err = pcall(command.execute, msg, args)
 
-      command.hooks.postCommand(msg, success and type(err) == 'table' and err or nil)
+      command.hooks.postCommand(msg, success and class.type(err) == 'Message' and err or nil)
 
       if not success then
          self:error('ERROR WITH ' .. command.name .. ': ' .. err)
@@ -123,12 +124,12 @@ end
 
 function Toast:login(token, status)
    self:run('Bot ' .. token)
-   return status and self:setStatus(status) or self._commands['help'] and self:setStatus(self._prefix[1] .. 'help')
+   return status and self:setStatus(status)
 end
 
 function Toast:addCommand(command)
+   assert(class.type(command) == 'Command', 'Command must be a Command object')
    self._commands[command.name] = command
-
    self:debug('Command ' .. command.name .. ' has been added')
 end
 
