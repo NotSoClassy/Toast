@@ -1,7 +1,7 @@
 local discordia = require('discordia')
 local Embed = require('./Embed')
 
-local class = discordia.class
+local class, Date = discordia.class, discordia.Date
 local Command, get, set = class('Command')
 
 local function hookInit(hooks)
@@ -28,7 +28,7 @@ local function embedGen(self)
       :setDescription(self._description)
       :addField('Usage:', self._usage)
       :addField('Aliases:', table.concat(self._aliases), '\n')
-      :setFooter('This command has a ' .. self._cooldown / 1000 .. ' second cooldown')
+      :setFooter('This command has a ' .. self._cooldown  .. ' second cooldown')
 end
 
 function Command:__init(name, options)
@@ -46,7 +46,7 @@ function Command:__init(name, options)
 end
 
 function Command:startCooldown(id)
-   self._cooldowns[id] = os.time() * 1000
+   self._cooldowns[id] = Date():toMilliseconds()
 end
 
 function Command:onCooldown(id)
@@ -54,7 +54,7 @@ function Command:onCooldown(id)
    if not start then
       return false
    end
-   local now = os.time() * 1000
+   local now = Date():toMilliseconds()
    if (start + self._cooldown) <= now then
       self._cooldowns[id] = nil
       return false
