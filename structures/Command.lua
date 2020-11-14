@@ -32,7 +32,7 @@ local function embedGen(self)
 end
 
 function Command:__init(name, options)
-   options = options or nil
+   options = options or {}
    self._cooldowns = {}
    self._name = name
    self._example = options.example or name .. ' [any]'
