@@ -5,7 +5,8 @@ local class, enums, Client = discordia.class, discordia.enums, discordia.Client
 local Toast, get = class('Toast', Client)
 
 local validOptions = {
-   prefix = {'string', 'table'}
+   prefix = {'string', 'table'},
+   defaultHelp = 'boolean'
 }
 
 local function parseOptions(options)
@@ -51,7 +52,7 @@ function Toast:__init(allOptions)
    Client.__init(self, discordiaOptions)
 
    self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
-   self._commands = {}
+   self._commands = {options.defaultHelp and require('../commands/help')}
    self._uptime = discordia.Stopwatch()
 
    self:on('messageCreate', function(msg)

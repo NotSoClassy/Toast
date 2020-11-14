@@ -1,4 +1,5 @@
 local discordia = require('discordia')
+local Embed = require('./Embed')
 
 local class = discordia.class
 local Command, get, set = class('Command')
@@ -20,17 +21,28 @@ local function hookInit(hooks)
    end})
 end
 
+local function embedGen(self)
+   return Embed()
+      :setColor('random')
+      :setTitle(self._name:gsub('^(.)', string.upper))
+      :setDescription(self._description)
+      :addField('Usage:', self._usage)
+      :addField('Aliases:', table.concat(self._aliases), '\n')
+      :setFooter('This command has a ' .. self._cooldown / 1000 .. ' second cooldown')
+end
+
 function Command:__init(name, options)
    options = options or nil
    self._cooldowns = {}
    self._name = name
    self._example = options.example or name .. ' [any]'
-   self._description = options.example or 'The ' .. name .. ' command'
+   self._description = options.description or 'The ' .. name .. ' command'
    self._cooldown = options.cooldown or 0
    self._execute = options.execute or function() end
    self._aliases = options.aliases or {}
    self._allowDMS = options.allowDMS or false
    self._hooks = hookInit(options.hooks)
+   self._helpEmbed = embedGen(self)
 end
 
 function Command:startCooldown(id)
@@ -55,19 +67,26 @@ end
 
 function set.example(self, str)
    self._example = str
+   self._helpEmbed = embedGen(self)
 end
+
 function set.description(self, str)
    self._description = str
+   self._helpEmbed = embedGen(self)
 end
+
 function set.execute(self, fn)
    self._execute = fn
 end
+
 function set.aliases(self, tbl)
    self._aliases = tbl
+   self._helpEmbed = embedGen(self)
 end
 
 function set.cooldown(self, cd)
    self._cooldown = cd
+   self._helpEmbed = embedGen(self)
 end
 
 function set.allowDMS(self, bool)
@@ -78,6 +97,10 @@ end
 
 function get.name(self)
    return self._name
+end
+
+function get.helpEmbed(self)
+   return self._helpEmbed
 end
 
 function get.example(self)
