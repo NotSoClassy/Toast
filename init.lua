@@ -5,7 +5,7 @@ return {
    package = require('./package'),
    utils = require('./util'),
    Client = require('./structures/Client'),
-   Command = require('./structures/Command'),
    Embed = require('./structures/Embed'),
+   Command = require('./structures/Command'),
    Array = require('./structures/Array')
 }
