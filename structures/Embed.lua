@@ -14,6 +14,7 @@ local limits = {
 }
 
 local function shrink(str, pos)
+   if #str == 0 then return constants.ZWSP end
    if #str <= pos then
       return str
    end
