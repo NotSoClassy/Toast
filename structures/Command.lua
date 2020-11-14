@@ -40,7 +40,8 @@ function Command:__init(name, options)
    self._cooldown = options.cooldown or 0
    self._execute = options.execute or function() end
    self._aliases = options.aliases or {}
-   self._allowDMS = options.allowDMS or false
+   self._allowDMS = not not options.allowDMS
+   self._allowGuilds = not not not options._allowGuilds
    self._hooks = hookInit(options.hooks)
    self._helpEmbed = embedGen(self)
 end
@@ -93,6 +94,10 @@ function set.allowDMS(self, bool)
    self._allowDMS = bool
 end
 
+function set.allowGuilds(self, bool)
+   self._allowGuilds = bool
+end
+
 -- Getters
 
 function get.name(self)
@@ -125,6 +130,10 @@ end
 
 function get.allowDMS(self)
    return self._allowDMS
+end
+
+function get.allowGuilds(self)
+   return self._allowGuilds
 end
 
 function get.hooks(self)
