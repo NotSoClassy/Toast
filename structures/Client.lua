@@ -4,14 +4,32 @@ local util = require('../util')
 local class, enums, Client = discordia.class, discordia.enums, discordia.Client
 local Toast, get = class('Toast', Client)
 
-local validOptions = {prefix = 'string'}
+local validOptions = {
+   prefix = {'string', 'table'}
+}
+
 local function parseOptions(options)
    local discordiaOptions = {}
    local toastOptions = {}
 
    for i, v in pairs(options) do
       if validOptions[i] then
-         toastOptions[i] = v
+         local optionType = validOptions[i]
+         if type(optionType) == 'table' then
+
+            for count, optType in ipairs(optionType) do
+               if type(v) == optType then
+                  break
+               elseif count == #optionType then
+                  error('The ' .. i .. ' option should be a (' .. table.concat(optionType, ' | ') .. ')')
+               end
+            end
+
+            toastOptions[i] = v
+         else
+            assert(type(v) == optionType, 'The ' .. i .. ' option should be a (' .. optionType .. ')')
+            toastOptions[i] = v
+         end
       else
          discordiaOptions[i] = v
       end
@@ -37,13 +55,8 @@ function Toast:__init(allOptions)
    self._uptime = discordia.Stopwatch()
 
    self:on('messageCreate', function(msg)
-      if not msg.guild then
-         return
-      end
 
-      if msg.author.bot then
-         return
-      end
+      if msg.author.bot then return end
 
       if msg.guild and not msg.guild:getMember(msg.client.user.id):hasPermission(enums.permission.sendMessages) then
          return
@@ -57,15 +70,11 @@ function Toast:__init(allOptions)
          end
       end
 
-      if not prefix then
-         return
-      end
+      if not prefix then return end
 
       local cmd, msgArg = string.match(msg.cleanContent, '^' .. prefix .. '(%S+)%s*(.*)')
 
-      if not cmd then
-         return
-      end
+      if not cmd then return end
 
       cmd = cmd:lower()
 
@@ -82,28 +91,31 @@ function Toast:__init(allOptions)
          end
       end
 
-      if not command then
-         return
-      end
+      if not command then return end
+      if not command.allowDMS and not msg.guild then return end
 
       if command:onCooldown(msg.author.id) then
          local _, time = command:onCooldown(msg.author.id)
          return msg:reply {
             embed = {
-               title = 'Slow down you\'re on cooldown',
+               title = 'Slow down, you\'re on cooldown',
                description = 'Please wait ' .. util.formatLongfunction(time),
-               color = 16711731
+               color = 16711731 -- error red colour
             }
          }
       end
 
+      command.hooks.preCommand(msg)
+
       local success, err = pcall(command.execute, msg, args)
+
+      command.hooks.postCommand(msg, success and type(err) == 'table' and err or nil)
 
       if not success then
          self:error('ERROR WITH ' .. command.name .. ': ' .. err)
          msg:reply('Failed to run command')
       else
-         command.startCooldown(msg.author.id)
+         command:startCooldown(msg.author.id)
       end
    end)
 end
