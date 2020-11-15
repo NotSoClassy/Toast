@@ -22,12 +22,13 @@ local function hookInit(hooks)
 end
 
 local function embedGen(self)
+   local aliases = table.concat(self._aliases, '\n')
    return Embed()
       :setColor('random')
       :setTitle(self._name:gsub('^(.)', string.upper))
       :setDescription(self._description)
       :addField('Usage:', self._usage)
-      :addField('Aliases:', table.concat(self._aliases), '\n')
+      :addField('Aliases:', #aliases == 0 and 'None' or aliases)
       :setFooter('This command has a ' .. self._cooldown  .. ' second cooldown')
 end
 
@@ -41,7 +42,6 @@ function Command:__init(name, options)
    self._execute = options.execute or function() end
    self._aliases = options.aliases or {}
    self._allowDMS = not not options.allowDMS
-   self._allowGuilds = not not not options._allowGuilds
    self._hooks = hookInit(options.hooks)
    self._helpEmbed = embedGen(self)
 end
@@ -94,10 +94,6 @@ function set.allowDMS(self, bool)
    self._allowDMS = bool
 end
 
-function set.allowGuilds(self, bool)
-   self._allowGuilds = bool
-end
-
 -- Getters
 
 function get.name(self)
@@ -130,10 +126,6 @@ end
 
 function get.allowDMS(self)
    return self._allowDMS
-end
-
-function get.allowGuilds(self)
-   return self._allowGuilds
 end
 
 function get.hooks(self)
