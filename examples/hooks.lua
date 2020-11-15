@@ -10,6 +10,9 @@ client:addCommand {
         return msg:reply('This command uses hooks!')
     end,
     hooks = {
+        check = function(msg) -- This should return a boolean of whether or not the user can use this command
+            return msg and true
+        end,
         preCommand = function(msg) -- This runs before the command function is called
             msg.channel:broadcastTyping()
             timer.sleep(1000) -- Wait 1000ms to make it look like the bot is actually typing something out

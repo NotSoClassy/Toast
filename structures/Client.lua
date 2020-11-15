@@ -96,6 +96,7 @@ function Toast:__init(allOptions)
 
       if not command then return end
       if not command.allowDMS and not msg.guild then return end
+      if not command.hooks.check(msg) then return end
 
       if command:onCooldown(msg.author.id) then
          local _, time = command:onCooldown(msg.author.id)

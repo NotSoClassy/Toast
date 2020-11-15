@@ -6,12 +6,12 @@ local Command, get, set = class('Command')
 
 local function hookInit(hooks)
    hooks = hooks or {}
-   local emptyFunction = function() end
+   local emptyFunction = function() return true end
 
    for i, v in pairs(hooks) do
       assert(type(v) == 'function', 'All hooks must be a function (You set ' .. i .. ' to a ' .. type(v) .. ')')
    end
-
+   hooks.check = hooks.check or emptyFunction
    hooks.preCommand = hooks.preCommand or emptyFunction
    hooks.postCommand = hooks.postCommand or emptyFunction
 
