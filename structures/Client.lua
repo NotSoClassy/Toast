@@ -112,7 +112,7 @@ function Toast:__init(allOptions)
 
       local success, err = pcall(command.execute, msg, args)
 
-      command.hooks.postCommand(msg, success and class.type(err) == 'Message' and err or nil)
+      command.hooks.postCommand(msg, class.type(err) == 'Message' and err or nil)
 
       if not success then
          self:error('ERROR WITH ' .. command.name .. ': ' .. err)
