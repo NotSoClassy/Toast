@@ -1,5 +1,6 @@
 local discordia = require('discordia')
 local util = require('../util')
+local Command = require('./Command')
 
 local class, enums, Client = discordia.class, discordia.enums, discordia.Client
 local Toast, get = class('Toast', Client)
@@ -129,7 +130,7 @@ function Toast:login(token, status)
 end
 
 function Toast:addCommand(command)
-   assert(class.type(command) == 'Command', 'Command must be a Command object')
+   command = Command(command.name, command)
    self._commands[command.name] = command
    self:debug('Command ' .. command.name .. ' has been added')
 end
