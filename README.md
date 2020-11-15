@@ -6,13 +6,16 @@ A Framework for [Discordia](https://github.com/SinisterRectus/Discordia)
 
 ```lua
 local toast = require('toast')
+local client = toast.Client {
+    prefix = '!'
+}
 
-client:addCommand({
+client:addCommand {
   name = 'ping',
   execute = function(msg, args)
     return msg:reply('Pong!')
   end
-})
+}
 
 client:login('TOKEN')
 ```
