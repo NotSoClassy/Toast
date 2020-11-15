@@ -130,7 +130,7 @@ function Toast:login(token, status)
 end
 
 function Toast:addCommand(command)
-   command = Command(command.name, command)
+   command = class.type(command) == 'Command' and command or Command(command.name, command)
    self._commands[command.name] = command
    self:debug('Command ' .. command.name .. ' has been added')
 end
