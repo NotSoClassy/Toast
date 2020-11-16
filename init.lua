@@ -6,6 +6,5 @@ return {
    utils = require('./util'),
    Client = require('./structures/Client'),
    Embed = require('./structures/Embed'),
-   Command = require('./structures/Command'),
-   Array = require('./structures/Array')
+   Command = require('./structures/Command')
 }
