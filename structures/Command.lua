@@ -37,13 +37,31 @@ function Command:__init(name, options)
    self._cooldowns = {}
    self._name = name
    self._example = options.example or name .. ' [any]'
-   self._description = options.description or 'The ' .. name .. ' command'
+   self._description = options.description or 'The ' .. name .. ' command!'
    self._cooldown = options.cooldown or 0
    self._execute = options.execute or function() end
    self._aliases = options.aliases or {}
    self._allowDMS = not not options.allowDMS
+   self._allowGuilds = not (options.allowGuilds == false)
+   self._nsfw = not not options.nsfw
+   self._perms = options.perms or {}
    self._hooks = hookInit(options.hooks)
    self._helpEmbed = embedGen(self)
+end
+
+function Command:hasPermission(member, channel)
+   if not member or not channel.guild then return true end
+   local perms = member:getPermissions(channel)
+   return perms:has(unpack(self._perms))
+end
+
+function Command:check(msg)
+   if not self._allowDMS and not msg.guild then return end
+   if not self._allowGuilds and msg.guild then return end
+   if self.nsfw and not msg.channel.nsfw then return end
+   if not self._hooks.check(msg) then return end
+   if not self:hasPermission(msg.member, msg.channel) then return end
+   return true
 end
 
 function Command:startCooldown(id)
@@ -66,70 +84,88 @@ end
 
 -- Setters
 
-function set.example(self, str)
-   self._example = str
+function set:example(v)
+   self._example = v
    self._helpEmbed = embedGen(self)
 end
 
-function set.description(self, str)
-   self._description = str
+function set:description(v)
+   self._description = v
    self._helpEmbed = embedGen(self)
 end
 
-function set.execute(self, fn)
-   self._execute = fn
+function set:execute(v)
+   self._execute = v
 end
 
-function set.aliases(self, tbl)
-   self._aliases = tbl
+function set:aliases(v)
+   self._aliases = v
    self._helpEmbed = embedGen(self)
 end
 
-function set.cooldown(self, cd)
-   self._cooldown = cd
+function set:cooldown(v)
+   self._cooldown = v
    self._helpEmbed = embedGen(self)
 end
 
-function set.allowDMS(self, bool)
-   self._allowDMS = bool
+function set:allowDMS(v)
+   self._allowDMS = v
+end
+
+function set:nsfw(v)
+   self._nsfw = v
+end
+
+function set:perms(v)
+   self._perms = v
 end
 
 -- Getters
 
-function get.name(self)
+function get:name()
    return self._name
 end
 
-function get.helpEmbed(self)
+function get:helpEmbed()
    return self._helpEmbed
 end
 
-function get.example(self)
+function get:example()
    return self._example
 end
 
-function get.description(self)
+function get:description()
    return self._description
 end
 
-function get.execute(self)
+function get:execute()
    return self._execute
 end
 
-function get.aliases(self)
+function get:aliases()
    return self._aliases
 end
 
-function get.cooldown(self)
+function get:cooldown()
    return self._cooldown
 end
 
-function get.allowDMS(self)
+function get:allowDMS()
    return self._allowDMS
 end
 
-function get.hooks(self)
+function get:nsfw()
+   return self._nsfw
+end
+
+function get:perms()
+   return self._perms
+end
+
+function get:hooks()
    return self._hooks
 end
+
+
 
 return Command
