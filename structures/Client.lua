@@ -7,7 +7,7 @@ local Toast, get = class('Toast', Client)
 
 local validOptions = {
    prefix = {'string', 'table'},
-   owner = {'string', 'table'},
+   owners = {'string', 'table'},
    defaultHelp = 'boolean'
 }
 
@@ -53,6 +53,7 @@ function Toast:__init(allOptions)
    local options, discordiaOptions = parseOptions(allOptions or {})
    Client.__init(self, discordiaOptions)
 
+   self._options = options
    self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
    self._commands = {options.defaultHelp and require('../commands/help')}
    self._uptime = discordia.Stopwatch()
@@ -95,8 +96,7 @@ function Toast:__init(allOptions)
       end
 
       if not command then return end
-      if not command.allowDMS and not msg.guild then return end
-      if not command.hooks.check(msg) then return end
+      if not command:check(msg) then return end
 
       if command:onCooldown(msg.author.id) then
          local _, time = command:onCooldown(msg.author.id)
@@ -157,6 +157,10 @@ end
 
 function get.uptime(self)
    return self._uptime
+end
+
+function get.options(self)
+   return self._options
 end
 
 return Toast
