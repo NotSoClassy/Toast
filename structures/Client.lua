@@ -53,6 +53,7 @@ function Toast:__init(allOptions)
    local options, discordiaOptions = parseOptions(allOptions or {})
    Client.__init(self, discordiaOptions)
 
+   self._owners = type(options.owners) == 'table' and options.owners or {options.owners or self.owner and self.owner.id}
    self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
    self._commands = {options.defaultHelp and require('../commands/help')}
    self._uptime = discordia.Stopwatch()
@@ -65,13 +66,7 @@ function Toast:__init(allOptions)
          return
       end
 
-      local prefix
-      for _, pre in pairs(self._prefix) do
-         if string.match(msg.content, '^' .. pre) then
-            prefix = pre
-            break
-         end
-      end
+      local prefix = util.getPrefix(msg)
 
       if not prefix then return end
 
@@ -110,7 +105,7 @@ function Toast:__init(allOptions)
 
       command.hooks.preCommand(msg)
 
-      local success, err = pcall(command.execute, msg, args)
+      local success, err = pcall(command.execute, msg, args, command)
 
       command.hooks.postCommand(msg, class.type(err) == 'Message' and err or nil)
 
@@ -152,6 +147,10 @@ end
 
 function get:commands()
    return self._commands
+end
+
+function get:owners()
+   return self._owners
 end
 
 function get:uptime()
