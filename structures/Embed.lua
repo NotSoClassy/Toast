@@ -131,7 +131,7 @@ function Embed:addField(name, value, inline)
    return self
 end
 
-function get.embed(self)
+function get:embed()
    return self._embed
 end
 

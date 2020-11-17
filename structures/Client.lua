@@ -146,15 +146,15 @@ function Toast:removeCommand(name)
    self:debug('Command ' .. name .. ' has been removed')
 end
 
-function get.prefix(self)
+function get:prefix()
    return self._prefix
 end
 
-function get.commands(self)
+function get:commands()
    return self._commands
 end
 
-function get.uptime(self)
+function get:uptime()
    return self._uptime
 end
 
