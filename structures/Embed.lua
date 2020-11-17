@@ -32,7 +32,7 @@ function Embed:send(chnl)
    if not chnl.guild then
       return chnl:send(self)
    end
-   if not chnl.guild.me:hasPermission(enums.permission.embedLinks) then
+   if not chnl.guild:getMember(chnl.client.user.id):hasPermission(enums.permission.embedLinks) then
       return chnl:send('I am missing permissions to send embeds')
    end
    return chnl:send(self)
