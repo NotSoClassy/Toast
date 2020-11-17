@@ -53,7 +53,6 @@ function Toast:__init(allOptions)
    local options, discordiaOptions = parseOptions(allOptions or {})
    Client.__init(self, discordiaOptions)
 
-   self._options = options
    self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
    self._commands = {options.defaultHelp and require('../commands/help')}
    self._uptime = discordia.Stopwatch()
@@ -157,10 +156,6 @@ end
 
 function get.uptime(self)
    return self._uptime
-end
-
-function get.options(self)
-   return self._options
 end
 
 return Toast
