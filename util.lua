@@ -157,4 +157,24 @@ function util.checkPerm(member, channel, permissions)
    end
 end
 
+function util.getPrefix(msg)
+   local prefix
+   for _, pre in pairs(msg.client._prefix) do
+      if string.match(msg.content, '^' .. pre) then
+         prefix = pre
+         break
+      end
+   end
+   return prefix
+end
+
+function util.isOwner(user)
+   for _, owner in pairs(user.client.owners) do
+      if owner == user.id then
+         return true
+      end
+   end
+   return false
+end
+
 return util
