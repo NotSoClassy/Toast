@@ -41,6 +41,7 @@ function Command:__init(name, options)
    self._cooldown = options.cooldown or 0
    self._execute = options.execute or function() end
    self._aliases = options.aliases or {}
+   self._hidden = not not options.hidden
    self._allowDMS = not not options.allowDMS
    self._allowGuilds = not (options.allowGuilds == false)
    self._nsfw = not not options.nsfw
@@ -108,6 +109,10 @@ function set:cooldown(v)
    self._helpEmbed = embedGen(self)
 end
 
+function set:hidden(v)
+   self._hidden = v
+end
+
 function set:allowDMS(v)
    self._allowDMS = v
 end
@@ -160,6 +165,10 @@ end
 
 function get:perms()
    return self._perms
+end
+
+function get:hidden()
+   return self._hidden
 end
 
 function get:hooks()

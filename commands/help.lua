@@ -3,7 +3,7 @@ local toast = require('../init')
 local function search(tbl, q, where)
     for _, v in pairs(tbl) do
         if v[where] == q or search(v.aliases, v, 'aliases') then
-           return v
+            return v
         end
     end
 end
@@ -24,7 +24,9 @@ return toast.Command('help', {
             local description = ''
 
             for _, cmd in pairs(msg.client.commands) do
-                description = description .. cmd.name .. ' - ' .. cmd.description .. '\n'
+                if cmd.hidden == false then
+                    description = description .. cmd.name .. ' - ' .. cmd.description .. '\n'
+                end
             end
 
             return msg:reply(toast.Embed()
