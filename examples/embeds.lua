@@ -8,7 +8,7 @@ local command = toast.Command('embed', {
             :setDescription('description')
             :addField('name', 'value', true)
             :setColor('Random')
-        embed:send(msg.channel)
+        return embed:send(msg.channel)
     end
 })
 
