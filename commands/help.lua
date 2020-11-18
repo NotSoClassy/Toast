@@ -2,7 +2,7 @@ local toast = require('../init')
 
 local function search(tbl, q, where)
     for _, v in pairs(tbl) do
-        if v[where] == q or search(v.aliases, v, 'aliases') then
+        if v[where] == q or search(v.aliases or {}, v, 'aliases') then
             return v
         end
     end
