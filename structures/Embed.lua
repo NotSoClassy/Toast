@@ -120,9 +120,7 @@ function Embed:setAuthor(name, url, icon_url, proxy_icon_url)
 end
 
 function Embed:addField(name, value, inline)
-   if #self._embed.fields <= limits.fields then
-      return self
-   end
+   if #self._embed.fields >= limits.fields then return self end
    name = name or constants.ZWSP
    value = value or constants.ZWSP
    name = shrink(name, limits.field.name)
