@@ -1,4 +1,5 @@
 local discordia = require('discordia')
+local Embed = require('./structures/Embed')
 
 local enums = discordia.enums.permission
 local extensions = discordia.extensions
@@ -175,6 +176,15 @@ function util.isOwner(user)
       end
    end
    return false
+end
+
+function util.errorEmbed(title, content)
+   title = title or 'An error has occured'
+   return Embed()
+      :setTitle(title)
+      :setDescription(content)
+      :setTimestamp(discordia.Date():toISO())
+      :setColor(16711731)
 end
 
 return util
