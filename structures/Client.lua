@@ -90,17 +90,13 @@ function Toast:__init(allOptions)
       end
 
       if not command then return end
-      if not command:check(msg) then return end
+
+      local check, content = command:check(msg)
+      if not check then return msg:reply(util.errorEmbed(nil, content)) end
 
       if command:onCooldown(msg.author.id) then
          local _, time = command:onCooldown(msg.author.id)
-         return msg:reply {
-            embed = {
-               title = 'Slow down, you\'re on cooldown',
-               description = 'Please wait ' .. util.formatLongfunction(time),
-               color = 16711731 -- error red colour
-            }
-         }
+         return msg:reply(util.errorEmbed('Slow down, you\'re on cooldown', 'Please wait ' .. util.formatLongfunction(time)))
       end
 
       command.hooks.preCommand(msg)
@@ -111,7 +107,7 @@ function Toast:__init(allOptions)
 
       if not success then
          self:error('ERROR WITH ' .. command.name .. ': ' .. err)
-         msg:reply('Failed to run command')
+         msg:reply(util.errorEmbed(nil, 'Please try this command later'))
       else
          command:startCooldown(msg.author.id)
       end
@@ -125,16 +121,20 @@ end
 
 function Toast:addCommand(command)
    command = class.type(command) == 'Command' and command or Command(command.name, command)
-   self._commands[command.name] = command
+   table.insert(self._commands, command)
    self:debug('Command ' .. command.name .. ' has been added')
 end
 
 function Toast:removeCommand(name)
-   local command = self._commands[name]
+   local command
 
-   if not command then
-      return
+   for _, v in pairs(self._commands) do
+      if v.name == name then
+         command = v
+      end
    end
+
+   if not command then return end
 
    self._commands[name] = nil
 
