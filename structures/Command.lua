@@ -1,5 +1,4 @@
 local discordia = require('discordia')
-local Embed = require('./Embed')
 
 local class, Date = discordia.class, discordia.Date
 local Command, get, set = class('Command')
@@ -21,19 +20,6 @@ local function hookInit(hooks)
    end})
 end
 
-local function embedGen(self)
-   local aliases = table.concat(self._aliases, '\n')
-   local perms = table.concat(self._userPerms, '\n')
-   return Embed()
-      :setColor('random')
-      :setTitle(self._name:gsub('^(.)', string.upper))
-      :setDescription(self._description)
-      :addField('Usage:', self._example)
-      :addField('Aliases:', #aliases == 0 and 'None' or aliases)
-      :addField('Perms:', #perms == 0 and 'None' or perms)
-      :setFooter('This command has a ' .. math.floor(self._cooldown / 1000)  .. ' second cooldown')
-end
-
 function Command:__init(name, options)
    options = options or {}
    self._cooldowns = {}
@@ -50,7 +36,6 @@ function Command:__init(name, options)
    self._userPerms = options.userPerms or {}
    self._botPerms = options.botPerms or {}
    self._hooks = hookInit(options.hooks)
-   self._helpEmbed = embedGen(self)
 end
 
 local function hasPerms(member, channel, perms)
@@ -60,13 +45,25 @@ local function hasPerms(member, channel, perms)
 end
 
 function Command:check(msg)
+
    if not self._allowDMS and not msg.guild then return end
    if not self._allowGuilds and msg.guild then return end
-   if self.nsfw and not msg.channel.nsfw then return end
+
+   if self.nsfw and not msg.channel.nsfw then
+      return false, 'This is a NSFW only command, please try in a NSFW channel'
+   end
+
    local check, content = self._hooks.check(msg)
-   if not check then return content and msg:reply(content) and false end
-   if not hasPerms(msg.guild and msg.guild:getMember(msg.client.user.id), msg.channel, self._botPerms) then return end
-   if not hasPerms(msg.member, msg.channel, self._userPerms) then return end
+   if not check then return false, content end
+
+   if not hasPerms(msg.guild and msg.guild:getMember(msg.client.user.id), msg.channel, self._botPerms) then
+      return false, 'I am missing permission to run this command (' .. table.concat(self._botPerms, '\n') .. ')'
+   end
+
+   if not hasPerms(msg.member, msg.channel, self._userPerms) then
+      return false, 'You are missing permission to run this command (' .. table.concat(self._userPerms, '\n') .. ')'
+   end
+
    return true
 end
 
@@ -92,12 +89,10 @@ end
 
 function set:example(v)
    self._example = v
-   self._helpEmbed = embedGen(self)
 end
 
 function set:description(v)
    self._description = v
-   self._helpEmbed = embedGen(self)
 end
 
 function set:execute(v)
@@ -106,12 +101,10 @@ end
 
 function set:aliases(v)
    self._aliases = v
-   self._helpEmbed = embedGen(self)
 end
 
 function set:cooldown(v)
    self._cooldown = v
-   self._helpEmbed = embedGen(self)
 end
 
 function set:hidden(v)
