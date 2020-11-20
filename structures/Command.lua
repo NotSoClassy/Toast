@@ -3,9 +3,10 @@ local discordia = require('discordia')
 local class, Date = discordia.class, discordia.Date
 local Command, get, set = class('Command')
 
+local emptyFunction = function() return true end
+
 local function hookInit(hooks)
    hooks = hooks or {}
-   local emptyFunction = function() return true end
 
    for i, v in pairs(hooks) do
       assert(type(v) == 'function', 'All hooks must be a function (You set ' .. i .. ' to a ' .. type(v) .. ')')
@@ -27,7 +28,7 @@ function Command:__init(name, options)
    self._example = options.example or name .. ' [any]'
    self._description = options.description or 'The ' .. name .. ' command!'
    self._cooldown = options.cooldown or 0
-   self._execute = options.execute or function() end
+   self._execute = options.execute or emptyFunction
    self._aliases = options.aliases or {}
    self._hidden = not not options.hidden
    self._allowDMS = not not options.allowDMS
