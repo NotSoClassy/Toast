@@ -1,16 +1,18 @@
 local toast = require('../init')
 
 local function embedGen(self)
-    local aliases = table.concat(self._aliases, '\n')
-    local perms = table.concat(self._userPerms, '\n')
+    local aliases = table.concat(self._aliases, ', ')
+    local perms = table.concat(self._userPerms, ', ')
+    local other = self._nsfw and 'NSFW only'
     return toast.Embed()
        :setColor('random')
        :setTitle(self._name:gsub('^(.)', string.upper))
        :setDescription(self._description)
-       :addField('Usage:', self._example)
-       :addField('Aliases:', #aliases == 0 and 'None' or aliases)
-       :addField('Perms:', #perms == 0 and 'None' or perms)
-       :setFooter('This command has a ' .. math.floor(self._cooldown / 1000)  .. ' second cooldown')
+       :addField('Usage:', self._example, true)
+       :addField('Aliases:', #aliases == 0 and 'None' or aliases, true)
+       :addField('Perms:', #perms == 0 and 'None' or perms, true)
+       :addField('Other:', other and other or 'None', true)
+       :setFooter(self._cooldown ~= 0 and 'This command has a ' .. math.floor(self._cooldown / 1000)  .. ' second cooldown' or 'This command has no cooldown')
  end
 
 local function search(tbl, q, where)
