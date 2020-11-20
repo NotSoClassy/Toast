@@ -58,11 +58,11 @@ function Command:check(msg)
    if not check then return false, content end
 
    if not hasPerms(msg.guild and msg.guild:getMember(msg.client.user.id), msg.channel, self._botPerms) then
-      return false, 'I am missing permission to run this command (' .. table.concat(self._botPerms, '\n') .. ')'
+      return false, 'I am missing permission to run this command (' .. table.concat(self._botPerms, ', ') .. ')'
    end
 
    if not hasPerms(msg.member, msg.channel, self._userPerms) then
-      return false, 'You are missing permission to run this command (' .. table.concat(self._userPerms, '\n') .. ')'
+      return false, 'You are missing permission to run this command (' .. table.concat(self._userPerms, ', ') .. ')'
    end
 
    return true
