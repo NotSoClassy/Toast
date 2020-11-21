@@ -45,23 +45,23 @@ end
 function util.formatLongfunction(milliseconds)
    local msAbs = math.abs(milliseconds)
    if msAbs >= d then
-      return util.plural(milliseconds, msAbs, d, 'day')
+      return util.plural(milliseconds / d, 'day')
    end
    if msAbs >= h then
-      return util.plural(milliseconds, msAbs, h, 'hour')
+      return util.plural(milliseconds / h, 'hour')
    end
    if msAbs >= m then
-      return util.plural(milliseconds, msAbs, m, 'minute')
+      return util.plural(milliseconds / m, 'minute')
    end
    if msAbs >= s then
-      return util.plural(milliseconds, msAbs, s, 'second')
+      return util.plural(milliseconds / s, 'second')
    end
    return tostring(milliseconds) .. ' ms'
 end
 
-function util.plural(ms, msAbs, n, name)
-   local isPlural = (msAbs >= n * 1.5)
-   return tostring(math.floor((ms / n) + 0.5)) .. ' ' .. tostring(name) .. tostring((isPlural and 's') or '')
+function util.plural(n, name)
+   name = n == -1 or n == 1 and name or name .. 's'
+   return n .. ' ' .. name
 end
 
 function util.bulkDelete(msg, messages)
