@@ -35,7 +35,7 @@ return toast.Command('help', {
 
             if not command then return msg:reply('No command or alias found for `' .. query .. '`') end
 
-            return msg:reply(embedGen(command))
+            return embedGen(command):send(msg.channel)
         else
             local description = ''
 
@@ -45,11 +45,11 @@ return toast.Command('help', {
                 end
             end
 
-            return msg:reply(toast.Embed()
+            return toast.Embed()
                 :setColor('random')
                 :setTitle('Commands')
                 :setDescription(description)
-            )
+                :send(msg.channel)
         end
     end
 })
