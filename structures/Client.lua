@@ -1,3 +1,10 @@
+--[=[
+@c Toast
+@t ui
+@op options table
+@d The class that does the important things like handling events and commands.
+]=]
+
 local discordia = require('discordia')
 local util = require('../util')
 local Command = require('./Command')
@@ -114,17 +121,37 @@ function Toast:__init(allOptions)
    end)
 end
 
+--[=[
+@m login
+@p token string
+@op presence table
+@r nil
+@d It's just this [this](https://github.com/SinisterRectus/Discordia/wiki/Client#runtoken-presence),
+   but it adds "Bot" to the beginning if it isn't already there.
+]=]
 function Toast:login(token, status)
-   self:run('Bot ' .. token)
-   return status and self:setStatus(status)
+   token = string.match(token, '^Bot') and token or 'Bot ' .. token
+   self:run(token, status)
 end
 
+--[=[
+@m addCommand
+@p command Command/table
+@r nil
+@d Adds a command to the command handler.
+]=]
 function Toast:addCommand(command)
    command = class.type(command) == 'Command' and command or Command(command.name, command)
    table.insert(self._commands, command)
    self:debug('Command ' .. command.name .. ' has been added')
 end
 
+--[=[
+@m removeCommand
+@p name string
+@r nil
+@d Removes a command from the command handler.
+]=]
 function Toast:removeCommand(name)
    local command
 
@@ -141,18 +168,22 @@ function Toast:removeCommand(name)
    self:debug('Command ' .. name .. ' has been removed')
 end
 
+--[=[@p prefix table The prefix(es) the bot uses.]=]
 function get:prefix()
    return self._prefix
 end
 
+--[=[@p commands table All the commands in a table.]=]
 function get:commands()
    return self._commands
 end
 
+--[=[@p owners table The owners of the bot.]=]
 function get:owners()
    return self._owners
 end
 
+--[=[@p uptime Stopwatch The uptime of the bot.]=]
 function get:uptime()
    return self._uptime
 end

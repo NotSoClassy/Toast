@@ -1,3 +1,11 @@
+--[=[
+@c Command
+@t ui
+@p name string
+@op options table
+@d The class that does the import things like handling events and commands.
+]=]
+
 local discordia = require('discordia')
 
 local class, Date = discordia.class, discordia.Date
@@ -45,6 +53,13 @@ local function hasPerms(member, channel, perms)
    return userPerms:has(unpack(perms))
 end
 
+--[=[
+@m check
+@p msg Message
+@r boolean
+@r string/nil
+@d Checks if the user can run the command.
+]=]
 function Command:check(msg)
 
    if not self._allowDMS and not msg.guild then return end
@@ -68,10 +83,23 @@ function Command:check(msg)
    return true
 end
 
+--[=[
+@m startCooldown
+@p id string
+@r nil
+@d Starts a cooldown for the user provided.
+]=]
 function Command:startCooldown(id)
    self._cooldowns[id] = Date():toMilliseconds()
 end
 
+--[=[
+@m onCooldown
+@p id string
+@r boolean
+@r number/nil
+@d Checks if the user is on a cooldown.
+]=]
 function Command:onCooldown(id)
    local start = self._cooldowns[id]
    if not start then
@@ -130,54 +158,62 @@ end
 
 -- Getters
 
+--[=[@p name string The commands name.]=]
 function get:name()
    return self._name
 end
 
-function get:helpEmbed()
-   return self._helpEmbed
-end
-
+--[=[@p example string The commands example.]=]
 function get:example()
    return self._example
 end
 
+--[=[@p description string The commands description.]=]
 function get:description()
    return self._description
 end
 
+--[=[@p execute function The function called when the command is ran.]=]
 function get:execute()
    return self._execute
 end
 
+--[=[@p aliases table The command's alias(es).]=]
 function get:aliases()
    return self._aliases
 end
 
+--[=[@p cooldown number The cooldown length.]=]
 function get:cooldown()
    return self._cooldown
 end
 
+--[=[@p allowDMS boolean Whether or not the command can be ran in DMS.]=]
 function get:allowDMS()
    return self._allowDMS
 end
 
+--[=[@p nsfw boolean If the command is only allowed in nsfw channels.]=]
 function get:nsfw()
    return self._nsfw
 end
 
+--[=[@p userPerms table Table of permissions that the user needs to run the command.]=]
 function get:userPerms()
    return self._userPerms
 end
 
+--[=[@p botPerms table Table of permissions that the bot needs to run the command.]=]
 function get:botPerms()
    return self._botPerms
 end
 
+--[=[@p hidden boolean Whether or not the command will appear in the help list (Only if the default help option is enabled).]=]
 function get:hidden()
    return self._hidden
 end
 
+--[=[@p hooks table The commands hooks.]=]
 function get:hooks()
    return self._hooks
 end
