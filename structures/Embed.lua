@@ -92,7 +92,10 @@ end
 @d Sets the embeds color. If color is equal to random it will be a random color.
 ]=]
 function Embed:setColor(color)
-   color = string.lower(tostring(color)) == 'random' and math.floor(math.random(16777)) * 1000 or color
+   if type(color) == 'string' then
+      color = color:upper() == 'RANDOM' and math.floor(math.random(16777)) * 1000 or color
+      color = constants.colors[color:upper()] or color
+   end
    self._embed.color = color
    return self
 end
