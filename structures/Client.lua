@@ -63,7 +63,10 @@ function Toast:__init(allOptions)
    self._owners = type(options.owners) == 'table' and options.owners or {options.owners or self.owner and self.owner.id}
    self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
    self._commands = {options.defaultHelp and require('../commands/help')}
-   self._uptime = discordia.Stopwatch()
+
+   self:on('ready', function()
+      self._uptime = discordia.Stopwatch()
+   end)
 
    self:on('messageCreate', function(msg)
 
