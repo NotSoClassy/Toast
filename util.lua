@@ -60,7 +60,7 @@ function util.formatLongfunction(milliseconds)
 end
 
 function util.plural(n, name)
-   name = n == -1 or n == 1 and name or name .. 's'
+   name = n == 1 and name or name .. 's'
    return n .. ' ' .. name
 end
 
