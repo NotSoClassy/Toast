@@ -15,6 +15,7 @@ local Toast, get = class('Toast', Client)
 local validOptions = {
    prefix = {'string', 'table'},
    owners = {'string', 'table'},
+   commandHandler = 'function',
    defaultHelp = 'boolean'
 }
 
@@ -69,7 +70,7 @@ function Toast:__init(allOptions)
    end)
 
    self:on('messageCreate', function(msg)
-
+	  if options.commandHandler then return options.commandHandler(msg) end
       if msg.author.bot then return end
 
       if msg.guild and not msg.guild:getMember(msg.client.user.id):hasPermission(enums.permission.sendMessages) then
