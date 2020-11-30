@@ -88,7 +88,7 @@ end
 @m startCooldown
 @p id string
 @r nil
-@d Starts a cooldown for the user provided.
+@d Starts a cooldown for the user-provided.
 ]=]
 function Command:startCooldown(id)
    self._cooldowns[id] = Date():toMilliseconds()
