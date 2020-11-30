@@ -161,7 +161,7 @@ end
 function util.getPrefix(msg)
    local prefix
    for _, pre in pairs(msg.client._prefix) do
-      if string.match(msg.content, '^' .. pre) then
+      if string.find(msg.content, pre, true) == 1 then
          prefix = pre
          break
       end
