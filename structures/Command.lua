@@ -38,6 +38,7 @@ function Command:__init(name, options)
    self._cooldown = options.cooldown or 0
    self._execute = options.execute or emptyFunction
    self._aliases = options.aliases or {}
+   self._subCommands = options.subCommands or {}
    self._hidden = not not options.hidden
    self._allowDMS = not not options.allowDMS
    self._allowGuilds = not (options.allowGuilds == false)
@@ -120,6 +121,10 @@ function set:example(v)
    self._example = v
 end
 
+function set:subCommands(v)
+   self._subCommands = v
+end
+
 function set:description(v)
    self._description = v
 end
@@ -176,6 +181,11 @@ end
 --[=[@p execute function The function called when the command is ran.]=]
 function get:execute()
    return self._execute
+end
+
+--[=[@p subCommands table Table with all the subcommands]=]
+function get:subCommands()
+   return self._subCommands
 end
 
 --[=[@p aliases table The command's alias(es).]=]

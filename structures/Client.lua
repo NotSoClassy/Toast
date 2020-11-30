@@ -81,7 +81,7 @@ function Toast:__init(allOptions)
 
       if not prefix then return end
 
-      local cmd, msgArg = string.match(msg.cleanContent, '^' .. prefix .. '(%S+)%s*(.*)')
+      local cmd, msgArg = string.match(msg.cleanContent:sub(#prefix + 1), '^(%S+)%s*(.*)')
 
       if not cmd then return end
 
@@ -97,10 +97,19 @@ function Toast:__init(allOptions)
       for _, v in pairs(self._commands) do
          if v.name == cmd or search(v.aliases, cmd) then
             command = v
+            break
          end
       end
 
       if not command then return end
+
+      for _, v in pairs(command.subCommands) do
+         if v.name == args[1] then
+            table.remove(args, 1)
+            command = v
+            break
+         end
+      end
 
       local check, content = command:check(msg)
       if not check then return msg:reply(util.errorEmbed(nil, content)) end
@@ -146,6 +155,11 @@ end
 ]=]
 function Toast:addCommand(command)
    command = class.type(command) == 'Command' and command or Command(command.name, command)
+
+   for i, v in pairs(command.subCommands or {}) do
+      command.subCommands[i] = class.type(v) == 'Command' and v or Command(v.name, v)
+   end
+
    table.insert(self._commands, command)
    self:debug('Command ' .. command.name .. ' has been added')
 end
