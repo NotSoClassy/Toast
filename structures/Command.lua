@@ -33,8 +33,8 @@ function Command:__init(name, options)
    options = options or {}
    self._cooldowns = {}
    self._name = name
-   self._example = options.example or name .. ' [any]'
-   self._description = options.description or 'The ' .. name .. ' command!'
+   self._example = options.example or name
+   self._description = options.description or 'No description assigned.'
    self._cooldown = options.cooldown or 0
    self._execute = options.execute or emptyFunction
    self._aliases = options.aliases or {}
