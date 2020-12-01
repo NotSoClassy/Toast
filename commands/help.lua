@@ -7,7 +7,7 @@ local function embedGen(self, usage)
     local sub = ''
 
     for _, cmd in pairs(self._subCommands) do
-        sub = cmd.name .. ' - ' .. cmd.description .. '\n'
+        sub = sub .. cmd.name .. ' - ' .. cmd.description .. '\n'
     end
 
     return toast.Embed()
