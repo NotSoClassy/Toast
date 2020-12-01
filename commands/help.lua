@@ -1,6 +1,6 @@
 local toast = require('../init')
 
-local function embedGen(self)
+local function embedGen(self, usage)
     local aliases = table.concat(self._aliases, ', ')
     local perms = table.concat(self._userPerms, ', ')
     local other = self._nsfw and 'NSFW only'
@@ -14,7 +14,7 @@ local function embedGen(self)
        :setColor('random')
        :setTitle(self._name:gsub('^(.)', string.upper))
        :setDescription(self._description)
-       :addField('Usage:', self._example, true)
+       :addField('Usage:', usage .. ' ' .. self._example, true)
        :addField('Aliases:', #aliases == 0 and 'None' or aliases, true)
        :addField('Permissions:', #perms == 0 and 'None' or perms, true)
        :addField('Sub Commands:', #sub == 0 and 'None' or sub, true)
@@ -23,7 +23,8 @@ local function embedGen(self)
  end
 
 local function findCommand(cmds, q)
-    if not cmds then return end
+    if not cmds or not q then return end
+    q = q:lower()
     for _, v in pairs(cmds) do
         if v.name == q or v == q or findCommand(v.aliases, q) then
             return v
@@ -33,16 +34,25 @@ end
 
 return toast.Command('help', {
     description = 'This command!',
-    example = 'help [name | alias]',
+    example = '[name | alias]',
     execute = function(msg, args)
-        local query = table.concat(args, ' ')
+        local cmd = table.remove(args, 1)
 
-        if query and #query ~= 0 then
-            local command = findCommand(msg.client.commands, query)
+        if cmd and #cmd ~= 0 then
+            local command = findCommand(msg.client.commands, cmd)
 
-            if not command then return msg:reply('No command or alias found for `' .. query .. '`') end
+            if not command then return msg:reply('No command or alias found for `' .. cmd .. '`') end
 
-            return embedGen(command):send(msg.channel)
+            local usage = toast.util.getPrefix(msg) .. command.name
+
+            for _, sub in ipairs(args) do
+                local temp = findCommand(command.subCommands, sub)
+                if not temp then usage = toast.util.getPrefix(msg) .. command.name break end
+                usage = usage .. ' ' .. temp.name
+                command = temp or command
+            end
+
+            return embedGen(command, usage):send(msg.channel)
         else
             local description = ''
 
