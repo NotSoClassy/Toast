@@ -6,7 +6,7 @@ local client = toast.Client {
 client:addCommand {
     name = 'ban',
     description = 'Ban a user from this guild',
-    example = 'ban <mention>',
+    example = '<mention>',
     userPerms = {'banMembers'}, -- Make sure the user is allowed to ban people
     botPerms = {'banMembers'}, -- Make sure the bot can ban people
     hooks = {check = function(msg)
