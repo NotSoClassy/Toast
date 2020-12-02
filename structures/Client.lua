@@ -57,6 +57,14 @@ local function search(tbl, v)
    end
 end
 
+local function findSub(tbl, q)
+	for _, v in pairs(tbl) do
+		if v.name == q or search(v.aliases, q) then
+			return v
+		end
+	end
+end
+
 function Toast:__init(allOptions)
    local options, discordiaOptions = parseOptions(allOptions or {})
    Client.__init(self, discordiaOptions)
@@ -103,12 +111,10 @@ function Toast:__init(allOptions)
 
       if not command then return end
 
-      for _, v in pairs(command.subCommands) do
-         if v.name == args[1] then
-            table.remove(args, 1)
-            command = v
-            break
-         end
+      for i = 1, #args do
+         local sub = findSub(command._subCommands, args[i])
+         if not sub then args = {unpack(args, i, #args)}; break end
+         command = sub
       end
 
       local check, content = command:check(msg)
@@ -147,6 +153,15 @@ function Toast:login(token, status)
    self:run(token, status)
 end
 
+local function loopSubCommands(tbl)
+   if not tbl then return end
+   for i, v in pairs(tbl._subCommands) do
+      tbl.subCommands[i] = class.type(v) == 'Command' and v or Command(v.name, v)
+      tbl.subCommands[i] = loopSubCommands(tbl.subCommands[i])
+   end
+   return tbl
+end
+
 --[=[
 @m addCommand
 @p command Command/table
@@ -156,9 +171,7 @@ end
 function Toast:addCommand(command)
    command = class.type(command) == 'Command' and command or Command(command.name, command)
 
-   for i, v in pairs(command.subCommands or {}) do
-      command.subCommands[i] = class.type(v) == 'Command' and v or Command(v.name, v)
-   end
+   command = loopSubCommands(command) or command
 
    table.insert(self._commands, command)
    self:debug('Command ' .. command.name .. ' has been added')
