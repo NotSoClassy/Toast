@@ -11,7 +11,7 @@ local function embedGen(self, usage)
     end
 
     return toast.Embed()
-       :setColor('random')
+       :setColor('GREEN')
        :setTitle(self._name:gsub('^(.)', string.upper))
        :setDescription(self._description)
        :addField('Usage:', usage .. ' ' .. self._example, true)
@@ -63,9 +63,10 @@ return toast.Command('help', {
             end
 
             return toast.Embed()
-                :setColor('random')
+                :setColor('GREEN')
                 :setTitle('Commands')
                 :setDescription(description)
+				:setFooter('You can do `help [command]` for alias, usage, permission and sub command info')
                 :send(msg.channel)
         end
     end
