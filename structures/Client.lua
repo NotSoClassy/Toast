@@ -58,6 +58,7 @@ local function search(tbl, v)
 end
 
 local function findSub(tbl, q)
+   if not q then return end
 	for _, v in pairs(tbl) do
 		if v.name == q or search(v.aliases, q) then
 			return v
