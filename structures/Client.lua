@@ -111,7 +111,7 @@ function Toast:__init(allOptions)
 
       if not command then return end
 
-      for i = 1, #args do
+      for i = 1, #args + 1 do
          local sub = findSub(command._subCommands, args[i])
          if not sub then args = {unpack(args, i, #args)}; break end
          command = sub
