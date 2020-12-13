@@ -35,12 +35,10 @@ local function parseOptions(options)
                   error('The ' .. i .. ' option should be a (' .. table.concat(optionType, ' | ') .. ')')
                end
             end
-
-            toastOptions[i] = v
          else
             assert(type(v) == optionType, 'The ' .. i .. ' option should be a (' .. optionType .. ')')
-            toastOptions[i] = v
          end
+		 toastOptions[i] = v
       else
          discordiaOptions[i] = v
       end
