@@ -79,7 +79,7 @@ function Toast:__init(allOptions)
    end)
 
    self:on('messageCreate', function(msg)
-	  if options.commandHandler then return options.commandHandler(msg) end
+	   if options.commandHandler then return options.commandHandler(msg) end
       if msg.author.bot then return end
 
       if msg.guild and not msg.guild:getMember(msg.client.user.id):hasPermission(enums.permission.sendMessages) then
@@ -121,8 +121,8 @@ function Toast:__init(allOptions)
       local check, content = command:check(msg)
       if not check then return msg:reply(util.errorEmbed(nil, content)) end
 
-      if command:onCooldown(msg.author.id) then
-         local _, time = command:onCooldown(msg.author.id)
+      local onCooldown, time = command:onCooldown(msg.author.id)
+      if onCooldown then
          return msg:reply(util.errorEmbed('Slow down, you\'re on cooldown', 'Please wait ' .. util.formatLongfunction(time)))
       end
 
