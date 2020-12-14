@@ -1,4 +1,9 @@
-# Toast
+<h1 align="center">Toast</h1>
+<p align="center">
+  <img alt="Lines" src="https://img.shields.io/tokei/lines/github/notsoclassy/toast?style=flat-square">
+</p>
+
+# About
 
 A Framework for [Discordia](https://github.com/SinisterRectus/Discordia)
 
