@@ -1,5 +1,7 @@
 local toast = require('../init')
 
+local f = string.format
+
 local function embedGen(self, usage, prefix)
     local aliases = table.concat(self._aliases, ', ')
     local perms = table.concat(self._userPerms, ', ')
@@ -13,7 +15,7 @@ local function embedGen(self, usage, prefix)
     if self._example == '' and #self._args > 0 then
         usage = prefix .. self._name
         for _, arg in ipairs(self._args) do
-            usage = usage .. ' ' .. (arg.required and '<' .. arg.type .. '>' or '[' .. arg.type .. ']')
+            usage = usage .. ' ' .. (arg.required and f('<%s: %s>', arg.name, arg.type) or f('[%s: %s]', arg.name, arg.type))
         end
     end
 
