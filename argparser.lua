@@ -1,6 +1,6 @@
 local rex = require 'rex'
 
-local concat = table.concat
+local concat, unpack = table.concat, table.unpack
 local match, f = string.match, string.format
 
 local function isSnowflake(id)
@@ -65,6 +65,11 @@ local function parse(msg, cmdArgs, command)
 		else
 			if options.name == 'ungrouped' then error('Name "ungrouped" is reserved') end
 			if args[options.name] ~= nil then error(options.name .. ' name is already in use') end
+
+			if options.type == '...' then
+				args[options.name] = concat({ unpack(cmdArgs, i, #cmdArgs) }, ' ')
+				break
+			end
 
 			local typeCheck = types[options.type] or error('No type found for ' .. options.type)
 			local value = typeCheck(arg, msg)
