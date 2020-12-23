@@ -6,17 +6,22 @@
 ]=]
 
 local discordia = require('discordia')
+local argParse = require('../argparser')
 local util = require('../util')
 local Command = require('./Command')
 
 local class, enums, Client = discordia.class, discordia.enums, discordia.Client
 local Toast, get = class('Toast', Client)
 
+local match, gmatch = string.match, string.gmatch
+local concat, unpack = table.concat, table.unpack
+
 local validOptions = {
    prefix = {'string', 'table'},
    owners = {'string', 'table'},
    commandHandler = 'function',
-   defaultHelp = 'boolean'
+   defaultHelp = 'boolean',
+   advancedArgs = 'boolean'
 }
 
 local function parseOptions(options)
@@ -32,7 +37,7 @@ local function parseOptions(options)
                if type(v) == optType then
                   break
                elseif count == #optionType then
-                  error('The ' .. i .. ' option should be a (' .. table.concat(optionType, ' | ') .. ')')
+                  error('The ' .. i .. ' option should be a (' .. concat(optionType, ' | ') .. ')')
                end
             end
          else
@@ -68,16 +73,13 @@ function Toast:__init(allOptions)
    local options, discordiaOptions = parseOptions(allOptions or {})
    Client.__init(self, discordiaOptions)
 
-   self._owners = type(options.owners) == 'table' and options.owners or {options.owners or self.owner and self.owner.id}
+   self._owners = type(options.owners) == 'table' and options.owners or {options.owners}
    self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
    self._commands = {options.defaultHelp and require('../commands/help')}
+   self._uptime = discordia.Stopwatch()
+   self._toastEvents = {}
 
-   self:on('ready', function()
-      self._uptime = discordia.Stopwatch()
-   end)
-
-   self:on('messageCreate', function(msg)
-	   if options.commandHandler then return options.commandHandler(msg) end
+   self._toastEvents.commandHandler = self:on('messageCreate', options.commandHandler or function(msg)
       if msg.author.bot then return end
 
       if msg.guild and not msg.guild:getMember(msg.client.user.id):hasPermission(enums.permission.sendMessages) then
@@ -88,15 +90,15 @@ function Toast:__init(allOptions)
 
       if not prefix then return end
 
-      local cmd, msgArg = string.match(msg.cleanContent:sub(#prefix + 1), '^(%S+)%s*(.*)')
+      local cmd, msgArg = match(msg.cleanContent:sub(#prefix + 1), '^(%S+)%s*(.*)')
 
       if not cmd then return end
 
       cmd = cmd:lower()
 
       local args = {}
-      for arg in string.gmatch(msgArg, '%S+') do
-         table.insert(args, arg)
+      for arg in gmatch(msgArg, '%S+') do
+         args[#args] = arg
       end
 
       local command
@@ -124,6 +126,16 @@ function Toast:__init(allOptions)
          return msg:reply(util.errorEmbed('Slow down, you\'re on cooldown', 'Please wait ' .. util.formatLongfunction(time)))
       end
 
+      if options.advancedArgs and #command.args > 0 then
+         local parsed, err = argParse.parse(msg, args, command)
+
+         if err then
+            return msg:reply(util.errorEmbed('Error with arguments', err))
+         end
+
+         args = parsed
+      end
+
       command.hooks.preCommand(msg)
 
       local success, err = pcall(command.execute, msg, args, command)
@@ -148,7 +160,7 @@ end
    but it adds "Bot" to the beginning if it isn't already there.
 ]=]
 function Toast:login(token, status)
-   token = string.match(token, '^Bot') and token or 'Bot ' .. token
+   token = match(token, '^Bot') and token or 'Bot ' .. token
    self:run(token, status)
 end
 
@@ -172,7 +184,7 @@ function Toast:addCommand(command)
 
    command = loopSubCommands(command) or command
 
-   table.insert(self._commands, command)
+   self._commands[#self._commands] = command
    self:debug('Command ' .. command.name .. ' has been added')
 end
 
