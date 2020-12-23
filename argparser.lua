@@ -55,14 +55,14 @@ local function parse(msg, cmdArgs, command)
 
 	cmdArgs = split(concat(cmdArgs, ' '))
 
-	local args = {ungrouped = {}}
+	local args = {}
 
-	for i, arg in ipairs(cmdArgs) do
-		local options = command.args[i] -- {name = string, value = type or nil, required = boolean}
+	for i, options in ipairs(command.args) do
+		local arg = cmdArgs[i] -- {name = string, value = type or nil, required = boolean}
 
-		if not options then
-			args.ungrouped[#args.ungrouped + 1] = arg
-		else
+		if options then
+			table.remove(cmdArgs, i)
+
 			if options.name == 'ungrouped' then error('Name "ungrouped" is reserved') end
 			if args[options.name] ~= nil then error(options.name .. ' name is already in use') end
 
@@ -74,13 +74,15 @@ local function parse(msg, cmdArgs, command)
 			local typeCheck = types[options.value] or error('No type found for ' .. options.value)
 			local value = typeCheck(arg, msg)
 
-			if value == nil then return nil, options.error or f('Argument #%d should be a %s', i, options.value) end
+			if value == nil and options.required and not options.default then return nil, options.error or f('Argument #%d should be a %s', i, options.value) end
 
 			local default = options.default
+
 			args[options.name] = (value ~= nil and value) or type(default) == 'function' and default(msg) or default
 		end
 	end
 
+	args.ungrouped = cmdArgs
 	return args
 end
 

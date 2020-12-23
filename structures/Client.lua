@@ -91,7 +91,7 @@ function Toast:__init(allOptions)
 
       if not prefix then return end
 
-      local cmd, msgArg = match(msg.cleanContent:sub(#prefix + 1), '^(%S+)%s*(.*)')
+      local cmd, msgArg = match(msg.content:sub(#prefix + 1), '^(%S+)%s*(.*)')
 
       if not cmd then return end
 
