@@ -10,7 +10,7 @@ local function embedGen(self, usage, prefix)
         sub = sub .. cmd.name .. ' - ' .. cmd.description .. '\n'
     end
 
-    if self._example == '' then
+    if self._example == '' and #self._args > 0 then
         usage = prefix .. self._name
         for _, arg in ipairs(self._args) do
             usage = usage .. ' ' .. (arg.required and '<' .. arg.type .. '>' or '[' .. arg.type .. ']')
@@ -50,16 +50,17 @@ return toast.Command('help', {
 
             if not command then return msg:reply('No command or alias found for `' .. cmd .. '`') end
 
-            local usage = command.name
+            local prefix = toast.util.getPrefix(msg)
+            local usage = prefix .. command.name
 
             for _, sub in ipairs(args) do
                 local temp = findCommand(command.subCommands, sub)
-                if not temp then usage = toast.util.getPrefix(msg) .. command.name break end
+                if not temp then break end
                 usage = usage .. ' ' .. temp.name
                 command = temp or command
             end
 
-            return embedGen(command, usage, toast.util.getPrefix(msg)):send(msg.channel)
+            return embedGen(command, usage, prefix):send(msg.channel)
         else
             local description = ''
 
