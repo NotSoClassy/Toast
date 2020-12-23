@@ -45,6 +45,13 @@ function Command:__init(name, options)
    self._nsfw = not not options.nsfw
    self._userPerms = options.userPerms or {}
    self._botPerms = options.botPerms or {}
+   self._args = options.args or {}
+   self._requiredArgs = 0
+   for _, opt in ipairs(self._args) do
+      if opt.required == true then
+         self._requiredArgs = self._requiredArgs + 1
+      end
+   end
    self._hooks = hookInit(options.hooks)
 end
 
@@ -161,6 +168,10 @@ function set:botPerms(v)
    self._botPerms = v
 end
 
+function set:args(v)
+   self._args = v
+end
+
 -- Getters
 
 --[=[@p name string The commands name.]=]
@@ -223,11 +234,14 @@ function get:hidden()
    return self._hidden
 end
 
+--[=[@p args table The arguments used for the advanced argument parsing (will be ignored if it's empty)]=]
+function get:args()
+   return self._args
+end
+
 --[=[@p hooks table The commands hooks.]=]
 function get:hooks()
    return self._hooks
 end
-
-
 
 return Command
