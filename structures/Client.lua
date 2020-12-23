@@ -98,7 +98,7 @@ function Toast:__init(allOptions)
 
       local args = {}
       for arg in gmatch(msgArg, '%S+') do
-         args[#args] = arg
+         args[#args + 1] = arg
       end
 
       local command
@@ -184,7 +184,7 @@ function Toast:addCommand(command)
 
    command = loopSubCommands(command) or command
 
-   self._commands[#self._commands] = command
+   self._commands[#self._commands + 1] = command
    self:debug('Command ' .. command.name .. ' has been added')
 end
 
