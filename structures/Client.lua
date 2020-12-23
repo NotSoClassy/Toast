@@ -78,6 +78,7 @@ function Toast:__init(allOptions)
    self._commands = {options.defaultHelp and require('../commands/help')}
    self._uptime = discordia.Stopwatch()
    self._toastEvents = {}
+   self._toastOptions = options
 
    self._toastEvents.commandHandler = self:on('messageCreate', options.commandHandler or function(msg)
       if msg.author.bot then return end
