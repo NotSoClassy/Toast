@@ -58,7 +58,7 @@ local function parse(msg, cmdArgs, command)
 	local args = {}
 
 	for i, options in ipairs(command.args) do
-		local arg = cmdArgs[i] -- {name = string, value = type or nil, required = boolean}
+		local arg = cmdArgs[1] -- {name = string, value = type or nil, required = boolean}
 
 		if options then
 			table.remove(cmdArgs, i)
