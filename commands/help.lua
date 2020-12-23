@@ -15,7 +15,7 @@ local function embedGen(self, usage, prefix)
     if self._example == '' and #self._args > 0 then
         usage = prefix .. self._name
         for _, arg in ipairs(self._args) do
-            usage = usage .. ' ' .. (arg.required and f('<%s: %s>', arg.name, arg.type) or f('[%s: %s]', arg.name, arg.type))
+            usage = usage .. ' ' .. (arg.required and f('<%s: %s>', arg.name, arg.value) or f('[%s: %s]', arg.name, arg.value))
         end
     end
 
