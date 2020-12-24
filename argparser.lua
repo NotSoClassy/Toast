@@ -9,7 +9,7 @@ end
 
 local types = {
 
-	any = function(arg)
+	string = function(arg)
 		return arg
 	end,
 
@@ -20,10 +20,6 @@ local types = {
 	boolean = function(arg)
 		arg = arg:lower()
 		return (arg == 'true' and true) or (arg == 'false' and false) or nil
-	end,
-
-	string = function(arg)
-		return not tonumber(arg) and arg or nil
 	end,
 
 	user = function(arg, msg)
@@ -37,6 +33,13 @@ local types = {
 		local id = match(arg, '<@!(%d+)>') or match(arg, '%d+')
 		if not isSnowflake(id) then return end
 		return msg.guild:getMember(id)
+	end,
+
+	role = function(arg, msg)
+		if not msg.guild then return end
+		local id = match(arg, '<@&(%d+)>') or match(arg, '%d+')
+		if not isSnowflake(id) then return end
+		return msg.guild:getRole(id)
 	end
 }
 
@@ -50,7 +53,13 @@ end
 
 local function parse(msg, cmdArgs, command)
 	if #cmdArgs < command._requiredArgs then
-		return nil, 'Missing required arguments (see help command for more info)'
+		local example = command.name
+
+		for _, arg in ipairs(command.args) do
+			example = example ..  ' ' .. (arg.required and f('<%s: %s>', arg.name, arg.value) or f('[%s: %s]', arg.name, arg.value))
+		end
+
+		return nil, f('Missing required arguments\n`%s`', example)
 	end
 
 	cmdArgs = split(concat(cmdArgs, ' '))
@@ -58,27 +67,39 @@ local function parse(msg, cmdArgs, command)
 	local args = {}
 
 	for i, options in ipairs(command.args) do
-		local arg = cmdArgs[1] -- {name = string, value = type or nil, required = boolean}
+		local arg = cmdArgs[1]
 
-		if options then
+		local name = options.name
+		local type = options.value or options.type
+		local min, max = options.min, options.max
+		local default = options.default
+
+		if arg then
 			table.remove(cmdArgs, i)
 
-			if options.name == 'ungrouped' then error('Name "ungrouped" is reserved') end
-			if args[options.name] ~= nil then error(options.name .. ' name is already in use') end
+			if name == 'ungrouped' then error('Name "ungrouped" is reserved') end
+			if args[name] ~= nil then error(name .. ' name is already in use') end
 
-			if options.value == '...' then
-				args[options.name] = concat({ unpack(cmdArgs, i, #cmdArgs) }, ' ')
+			if type == '...' then
+				args[name] = concat({unpack(cmdArgs, i, #cmdArgs)}, ' ')
+				cmdArgs = {}
 				break
 			end
 
-			local typeCheck = types[options.value] or error('No type found for ' .. options.value)
+			local typeCheck = types[type] or error('No type found for ' .. type)
 			local value = typeCheck(arg, msg)
 
-			if value == nil and options.required and not options.default then return nil, options.error or f('Argument #%d should be a %s', i, options.value) end
+			if value == nil then return nil, options.error or f('Argument #%d should be a %s', i, type) end
 
-			local default = options.default
+			if value and type == 'number' and max then
+				if value > max or value < (min or 1) then
+					return nil, f('Argument #%d should be a number inbetween %d-%d', i, min, max)
+				end
+			end
 
-			args[options.name] = (value ~= nil and value) or type(default) == 'function' and default(msg) or default
+			args[name] = value
+		elseif default then
+			args[name] = type(default) == 'function' and default(msg) or default
 		end
 	end
 
