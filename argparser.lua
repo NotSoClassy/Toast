@@ -1,6 +1,6 @@
 local rex = require 'rex'
 
-local concat, unpack = table.concat, table.unpack
+local insert, remove, concat, unpack = table.insert, table.remove, table.concat, table.unpack
 local match, f = string.match, string.format
 
 local function isSnowflake(id)
@@ -50,7 +50,7 @@ local types = {
 local function split(content)
 	local args = {}
 	for arg in rex.gmatch(content, [[(?|"(.+?)"|'(.+?)'|(\S+))]]) do
-		 args[#args + 1] = arg
+		 insert(args, arg)
 	end
 	return args
 end
@@ -78,7 +78,7 @@ local function parse(msg, cmdArgs, command)
 		local default = options.default
 
 		if arg then
-			table.remove(cmdArgs, i)
+			remove(cmdArgs, i)
 
 			local type = options.value or options.type
 

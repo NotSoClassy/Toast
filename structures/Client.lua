@@ -14,7 +14,7 @@ local class, enums, Client = discordia.class, discordia.enums, discordia.Client
 local Toast, get = class('Toast', Client)
 
 local match, gmatch = string.match, string.gmatch
-local concat, unpack = table.concat, table.unpack
+local insert, concat, unpack = table.insert, table.concat, table.unpack
 
 local validOptions = {
    prefix = {'string', 'table'},
@@ -62,7 +62,7 @@ end
 
 local function findSub(tbl, q)
    if not q then return end
-	for _, v in pairs(tbl) do
+	for _, v in ipairs(tbl) do
 		if v.name == q or search(v.aliases, q) then
 			return v
 		end
@@ -185,7 +185,7 @@ function Toast:addCommand(command)
 
    command = loopSubCommands(command) or command
 
-   self._commands[#self._commands + 1] = command
+   insert(self._commands, command)
    self:debug('Command ' .. command.name .. ' has been added')
 end
 
@@ -198,15 +198,15 @@ end
 function Toast:removeCommand(name)
    local command
 
-   for _, v in pairs(self._commands) do
+   for i, v in ipairs(self._commands) do
       if v.name == name then
          command = v
+         self._commands[i] = nil
+         break
       end
    end
 
    if not command then return end
-
-   self._commands[name] = nil
 
    self:debug('Command ' .. name .. ' has been removed')
 end
