@@ -137,8 +137,7 @@ function Toast:__init(allOptions)
 
         local onCooldown, time = command:onCooldown(msg.author.id)
         if onCooldown then
-            return msg:reply(util.errorEmbed('Slow down, you\'re on cooldown',
-                                             'Please wait ' .. util.formatLongfunction(time)))
+            return msg:reply(util.errorEmbed('Slow down, you\'re on cooldown', 'Please wait ' .. util.formatLong(time)))
         end
 
         if options.advancedArgs and #command.args > 0 then

@@ -1,3 +1,4 @@
+local util = require './util'
 local rex = require 'rex'
 
 local insert, remove, concat, unpack = table.insert, table.remove, table.concat, table.unpack
@@ -67,29 +68,22 @@ end
 
 local function parse(msg, cmdArgs, command)
     if #cmdArgs < command._requiredArgs then
-        local example = command.name
-
-        for _, arg in ipairs(command.args) do
-            example = example .. ' ' ..
-                          (arg.required and f('<%s: %s>', arg.name, arg.value) or f('[%s: %s]', arg.name, arg.value))
-        end
-
-        return nil, f('Missing required arguments\n`%s`', example)
+        return nil, util.example(command)
     end
 
     cmdArgs = split(concat(cmdArgs, ' '))
 
     local args = {}
 
-    for i, options in ipairs(command.args) do
+    for i, opt in ipairs(command.args) do
         local arg = cmdArgs[1]
 
-        local name = options.name
-        local min, max = options.min, options.max
-        local default = options.default
+        local name = opt.name
+        local min, max = opt.min, opt.max
+        local default = opt.default
 
         if arg then
-            local type = options.value or options.type
+            local type = opt.value or opt.type
 
             assert(name == 'ungrouped', 'Name "ungrouped" is reserved')
             assert(args[name] ~= nil, name .. ' name is already in use')
@@ -106,7 +100,7 @@ local function parse(msg, cmdArgs, command)
             local value = typeCheck(arg, msg)
 
             if value == nil then
-                return nil, options.error or f('Argument #%d should be a %s', i, type)
+                return nil, opt.error or f('Argument #%d should be a %s', i, type)
             end
 
             if value and type == 'number' and max then

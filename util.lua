@@ -42,7 +42,7 @@ function util.seconds(seconds)
     return seconds * s
 end
 
-function util.formatLongfunction(milliseconds)
+function util.formatLong(milliseconds)
     local msAbs = math.abs(milliseconds)
     if msAbs >= d then
         return util.plural(milliseconds / d, 'day')
@@ -67,8 +67,8 @@ end
 function util.bulkDelete(msg, messages)
     if type(messages) == 'table' then
         local messageIDs = {}
-        for _, m in pairs(messages) do
-            table.insert(messageIDs, m.id or m)
+        for _, message in pairs(messages) do
+            table.insert(messageIDs, message.id or message)
         end
         if #messageIDs == 0 then
             return {}
@@ -112,9 +112,9 @@ function util.checkPerm(member, channel, permissions)
         return true
     end
     local hasRole
-    hasRole = function(member, role)
+    hasRole = function(mem, role)
         local has = nil
-        member.roles:forEach(function(role2)
+        mem.roles:forEach(function(role2)
             if role2.name:lower() == role:lower() then
                 has = true
             end
@@ -136,8 +136,8 @@ function util.checkPerm(member, channel, permissions)
             return true
         else
             local needed = {}
-            for roleName, perms in pairs(roles) do
-                for _, perm in pairs(perms) do
+            for roleName, permis in pairs(roles) do
+                for _, perm in pairs(permis) do
                     if extensions.table.search(perm, permissions) then
                         table.insert(needed, roleName)
                     end
@@ -181,6 +181,17 @@ end
 function util.errorEmbed(title, content)
     title = title or 'An error has occured'
     return Embed():setTitle(title):setDescription(content):setTimestamp(discordia.Date():toISO()):setColor(16711731)
+end
+
+function util.example(command)
+    local example = command.name
+
+    for _, arg in ipairs(command.args) do
+        example = example .. ' ' ..
+                      (arg.required and string.format('<%s: %s>', arg.name, arg.value) or string.format('[%s: %s]', arg.name, arg.value))
+    end
+
+    return example
 end
 
 return util
