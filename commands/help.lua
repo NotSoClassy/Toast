@@ -7,12 +7,12 @@ local function embedGen(self, usage, pre)
 	local other = self._nsfw and 'NSFW only'
 	local sub = ''
 
-	for _, cmd in pairs(self._subCommands) do
+	for _, cmd in ipairs(self._subCommands) do
 		sub = sub .. cmd.name .. ' - ' .. cmd.description .. '\n'
 	end
 
 	if self._example == '' and #self._args > 0 then
-		usage = pre .. toast.util.example(self)
+		usage = pre .. util.example(self)
 	end
 
 	return toast.Embed()

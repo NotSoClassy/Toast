@@ -8,6 +8,7 @@ local validOptions = {
 	owners = {'string', 'table'},
 	defaultHelp = 'boolean',
 	advancedArgs = 'boolean',
+	mentionPrefix = 'boolean',
 	commandHandler = 'function'
 }
 
@@ -42,7 +43,7 @@ end
 local function search(tbl, v)
 	v = v:lower()
 	for _, k in ipairs(tbl) do
-		if v == k or (k.aliases and search(k.aliases, v)) then
+		if k == v or k.name == v or search(k.aliases or {}, v) then
 			return k
 		end
 	end

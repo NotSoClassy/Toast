@@ -1,5 +1,7 @@
+local discordia = require 'discordia'
 local util = require 'util'
-local class = require 'discordia' .class
+
+local class, trim = discordia.class, discordia.extensions.string.trim
 
 local match, gmatch = string.match, string.gmatch
 
@@ -31,7 +33,7 @@ return function(msg)
         return
     end
 
-    local cmd, msgArg = match(msg.content:sub(#prefix + 1), '^(%S+)%s*(.*)')
+    local cmd, msgArg = match(trim(msg.content:sub(#prefix + 1)), '^(%S+)%s*(.*)')
 
     if not cmd then
         return
@@ -46,7 +48,7 @@ return function(msg)
 
     local command
 
-    for _, v in pairs(self._commands) do
+    for _, v in ipairs(self._commands) do
         if v.name == cmd or util.search(v.aliases, cmd) then
             command = v
             break

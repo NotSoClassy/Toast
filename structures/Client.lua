@@ -26,6 +26,12 @@ function Toast:__init(opt)
     self._toastEvents = {}
     self._toastOptions = options
 
+    self:on('ready', function()
+        if options.mentionPrefix then
+            table.insert(self._prefix, '<@!' .. self.user.id .. '> ')
+        end
+    end)
+
     self._toastEvents.commandHandler = self:on('messageCreate', options.commandHandler or require 'commandHandler')
 end
 
@@ -46,7 +52,7 @@ local function loopSubCommands(tbl)
     if not tbl then
         return
     end
-    for i, v in pairs(tbl._subCommands) do
+    for i, v in ipairs(tbl._subCommands) do
         tbl.subCommands[i] = class.type(v) == 'Command' and v or Command(v.name, v)
         tbl.subCommands[i] = loopSubCommands(tbl.subCommands[i])
     end
