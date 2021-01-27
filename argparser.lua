@@ -1,6 +1,7 @@
 local util = require 'utils'
 local rex = require 'rex'
 
+local clamp = require 'discordia' .extensions.math.clamp
 local insert, remove, concat, unpack = table.insert, table.remove, table.concat, table.unpack
 local match, f = string.match, string.format
 
@@ -104,7 +105,7 @@ local function parse(msg, cmdArgs, command)
             end
 
             if value and type == 'number' and max then
-                if value > max or value < (min or 1) then
+                if clamp(value, min or 1, max) ~= value then
                     return nil, f('Argument #%d should be a number inbetween %d-%d', i, min, max)
                 end
             end

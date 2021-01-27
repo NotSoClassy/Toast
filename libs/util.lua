@@ -4,7 +4,7 @@ local util = require '../userUtil'
 local concat = table.concat
 
 local validOptions = {
-	prefix = {'string', 'table'},
+	prefix = {'string', 'table', 'function'},
 	owners = {'string', 'table'},
 	defaultHelp = 'boolean',
 	advancedArgs = 'boolean',
