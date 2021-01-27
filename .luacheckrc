@@ -1,12 +1,10 @@
+-- luacheck: ignore
 exclude_files = {"deps", "examples"}
 
-ignore = { 
-  "143", "631",
-  "421", "422", "423", "431", "432", "433"
-}
+ignore = {"2../_.*", "631"}
 
 globals = {
-  "p", "process"
+  "p", "process", "table.unpack"
 }
 
 std = "luajit"
