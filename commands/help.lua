@@ -1,4 +1,5 @@
 local toast = require '../init'
+local util = require 'util'
 
 local function embedGen(self, usage, pre)
 	local aliases = table.concat(self._aliases, ', ')
@@ -26,18 +27,6 @@ local function embedGen(self, usage, pre)
 	   :setFooter(self._cooldown ~= 0 and 'This command has a ' .. math.floor(self._cooldown / 1000)  .. ' second cooldown' or 'This command has no cooldown')
 end
 
-local function findCommand(cmds, q)
-	if not cmds or not q then
-		return
-	end
-	q = q:lower()
-	for _, v in pairs(cmds) do
-		if v.name == q or v == q or findCommand(v.aliases, q) then
-			return v
-		end
-	end
-end
-
 return toast.Command('help', {
 	description = 'This command!',
 	example = '[name | alias]',
@@ -45,17 +34,17 @@ return toast.Command('help', {
 		local cmd = table.remove(args, 1)
 
 		if cmd and #cmd ~= 0 then
-			local command = findCommand(msg.client.commands, cmd)
+			local command = util.search(msg.client.commands, cmd)
 
 			if not command then
 				return msg:reply('No command or alias found for `' .. cmd .. '`')
 			end
 
-			local prefix = toast.util.getPrefix(msg)
+			local prefix = util.prefix(msg)
 			local usage = prefix .. command.name
 
 			for _, sub in ipairs(args) do
-				local temp = findCommand(command.subCommands, sub)
+				local temp = util.search(command.subCommands, sub)
 				if not temp then
 					break
 				end
@@ -67,7 +56,7 @@ return toast.Command('help', {
 		else
 			local description = ''
 
-			for _, command in pairs(msg.client.commands) do
+			for _, command in ipairs(msg.client.commands) do
 				if command.hidden == false then
 					description = description .. command.name .. ' - ' .. command.description .. '\n'
 				end

@@ -2,11 +2,12 @@
 @c Embed
 @t ui
 @d Safe way to make embeds.
-]=] local discordia = require('discordia')
-local constants = require('../constants')
+]=]
+local discordia = require 'discordia'
+local constants = require '../constants'
 
 local class, enums = discordia.class, discordia.enums
-local Embed, get = class('Embed')
+local Embed, get = class 'Embed'
 
 local limits = {
     title = 256,
@@ -93,9 +94,8 @@ end
 ]=]
 function Embed:setColor(color)
     if type(color) == 'string' then
-        color =
-            color:upper() == 'RANDOM' and math.floor(math.random(16777)) * 1000 or constants.colors[color:upper()] or
-                color
+        local upper = color:upper()
+        color = upper == 'RANDOM' and math.floor(math.random(16777)) * 1000 or constants.colors[upper] or color
     end
     self._embed.color = color
     return self

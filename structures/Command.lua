@@ -4,10 +4,11 @@
 @p name string
 @op options table
 @d The class that does the import things like handling events and commands.
-]=] local discordia = require('discordia')
+]=]
+local discordia = require 'discordia'
 
 local class, Date = discordia.class, discordia.Date
-local Command, get, set = class('Command')
+local Command, get, set = class 'Command'
 
 local emptyFunction = function()
     return true

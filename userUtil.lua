@@ -1,5 +1,5 @@
-local discordia = require('discordia')
-local Embed = require('./structures/Embed')
+local discordia = require 'discordia'
+local Embed = require './structures/Embed'
 
 local enums = discordia.enums.permission
 local extensions = discordia.extensions

@@ -3,166 +3,30 @@
 @t ui
 @op options table
 @d The class that does the important things like handling events and commands.
-]=] local discordia = require('discordia')
-local argParse = require('../argparser')
-local util = require('../util')
-local Command = require('./Command')
+]=]
+local discordia = require 'discordia'
+local Command = require './Command'
 
-local class, enums, Client = discordia.class, discordia.enums, discordia.Client
+local util = require 'util'
+
+local class, Client = discordia.class, discordia.Client
 local Toast, get = class('Toast', Client)
 
-local match, gmatch = string.match, string.gmatch
-local insert, concat, unpack = table.insert, table.concat, table.unpack
+local match = string.match
+local insert = table.insert
 
-local validOptions = {
-    prefix = {'string', 'table'},
-    owners = {'string', 'table'},
-    commandHandler = 'function',
-    defaultHelp = 'boolean',
-    advancedArgs = 'boolean'
-}
-
-local function parseOptions(options)
-    local discordiaOptions = {}
-    local toastOptions = {}
-
-    for i, v in pairs(options) do
-        if validOptions[i] then
-            local optionType = validOptions[i]
-            if type(optionType) == 'table' then
-
-                for count, optType in ipairs(optionType) do
-                    if type(v) == optType then
-                        break
-                    elseif count == #optionType then
-                        error('The ' .. i .. ' option should be a (' .. concat(optionType, ' | ') .. ')')
-                    end
-                end
-            else
-                assert(type(v) == optionType, 'The ' .. i .. ' option should be a (' .. optionType .. ')')
-            end
-            toastOptions[i] = v
-        else
-            discordiaOptions[i] = v
-        end
-    end
-
-    return toastOptions, discordiaOptions
-end
-
-local function search(tbl, v)
-    for i, k in pairs(tbl) do
-        if v == k then
-            return i
-        end
-    end
-end
-
-local function findSub(tbl, q)
-    if not q then
-        return
-    end
-    for _, v in ipairs(tbl) do
-        if v.name == q or search(v.aliases, q) then
-            return v
-        end
-    end
-end
-
-function Toast:__init(allOptions)
-    local options, discordiaOptions = parseOptions(allOptions or {})
+function Toast:__init(opt)
+    local options, discordiaOptions = util.parseOptions(opt or {})
     Client.__init(self, discordiaOptions)
 
     self._owners = type(options.owners) == 'table' and options.owners or {options.owners}
     self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
-    self._commands = {options.defaultHelp and require('../commands/help')}
+    self._commands = {options.defaultHelp and require '../commands/help'}
     self._uptime = discordia.Stopwatch()
     self._toastEvents = {}
     self._toastOptions = options
 
-    self._toastEvents.commandHandler = self:on('messageCreate', options.commandHandler or function(msg)
-        if msg.author.bot then
-            return
-        end
-
-        if msg.guild and not msg.guild:getMember(msg.client.user.id):hasPermission(enums.permission.sendMessages) then
-            return
-        end
-
-        local prefix = util.getPrefix(msg)
-
-        if not prefix then
-            return
-        end
-
-        local cmd, msgArg = match(msg.content:sub(#prefix + 1), '^(%S+)%s*(.*)')
-
-        if not cmd then
-            return
-        end
-
-        cmd = cmd:lower()
-
-        local args = {}
-        for arg in gmatch(msgArg, '%S+') do
-            args[#args + 1] = arg
-        end
-
-        local command
-
-        for _, v in pairs(self._commands) do
-            if v.name == cmd or search(v.aliases, cmd) then
-                command = v
-                break
-            end
-        end
-
-        if not command then
-            return
-        end
-
-        for i = 1, #args + 1 do
-            local sub = findSub(command._subCommands, args[i])
-            if not sub then
-                args = {unpack(args, i, #args)};
-                break
-            end
-            command = sub
-        end
-
-        local check, content = command:check(msg)
-        if not check then
-            return msg:reply(util.errorEmbed(nil, content))
-        end
-
-        local onCooldown, time = command:onCooldown(msg.author.id)
-        if onCooldown then
-            return msg:reply(util.errorEmbed('Slow down, you\'re on cooldown', 'Please wait ' .. util.formatLong(time)))
-        end
-
-        if options.advancedArgs and #command.args > 0 then
-            local parsed, err = argParse.parse(msg, args, command)
-
-            if err then
-                return msg:reply(util.errorEmbed('Error with arguments', err))
-            end
-
-            args = parsed
-        end
-
-        command.hooks.preCommand(msg)
-
-        local success, err = pcall(command.execute, msg, args, command)
-
-        command.hooks.postCommand(msg, class.type(err) == 'Message' and err or nil)
-
-        if not success then
-            self:error('ERROR WITH ' .. command.name .. ': ' .. err)
-            msg:reply(util.errorEmbed(nil, 'Please try this command later'))
-        else
-            command:startCooldown(msg.author.id)
-        end
-    end)
+    self._toastEvents.commandHandler = self:on('messageCreate', options.commandHandler or require 'commandHandler')
 end
 
 --[=[

@@ -1,4 +1,4 @@
-local util = require './util'
+local util = require 'utils'
 local rex = require 'rex'
 
 local insert, remove, concat, unpack = table.insert, table.remove, table.concat, table.unpack
@@ -85,8 +85,8 @@ local function parse(msg, cmdArgs, command)
         if arg then
             local type = opt.value or opt.type
 
-            assert(name == 'ungrouped', 'Name "ungrouped" is reserved')
-            assert(args[name] ~= nil, name .. ' name is already in use')
+            assert(name ~= 'ungrouped', 'Name "ungrouped" is reserved')
+            assert(args[name] == nil, name .. ' name is already in use')
 
             if type == '...' then
                 args[name] = concat({arg, unpack(cmdArgs, i, #cmdArgs)}, ' ')
@@ -96,7 +96,7 @@ local function parse(msg, cmdArgs, command)
 
             remove(cmdArgs, i)
 
-            local typeCheck = assert(types[type], error('No type found for ' .. type))
+            local typeCheck = assert(types[type], 'No type found for ' .. type)
             local value = typeCheck(arg, msg)
 
             if value == nil then
