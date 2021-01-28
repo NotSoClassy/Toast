@@ -51,8 +51,6 @@ end
 local function parse(str)
 
 	local flags = {}
-
-	local finish = '' -- str without flags for arg parser
 	local last = -1
 
 	for s, a, b, i in iter(str) do
@@ -74,15 +72,13 @@ local function parse(str)
 			local value = getValue(after)
 
 			flags[key] = value
-		elseif s == '\\' and a[1] == '-' then
-			finish = finish
-		else
-			finish = finish .. s
 		end
 
 		::continue::
 	end
-	finish = trim(gsub(str, [[((?<!\\)\-(?<!\\)\-?\S+\s)(?|"(.+?)"|'(.+?)'|(\S+))?(\s*)]], '')) -- please help me
+
+	local finish = '' -- luacheck: ignore -- str without flags for arg parser
+	finish = trim(gsub(str, [[((?<!\\)\-(?<!\\)\-?\S+\s)(?|"(.+?)"|'(.+?)'|(\S+))?(\s*)]], '')) -- uhh
 	finish = flags[string.match(finish, '%-%-?(%S+)')] and '' or finish -- prolly unstable
 
 	return flags, finish
