@@ -79,7 +79,13 @@ local function parse(str)
 
 	local finish -- str without flags for arg parser
 	finish = trim(gsub(str, [[((?<!\\)\-(?<!\\)\-?\S+\s)(?|"(.+?)"|'(.+?)'|(\S+))?(\s*)]], '')) -- uhh
-	finish = flags[string.match(finish, '%-%-?(%S+)')] and '' or finish -- prolly unstable
+	finish = trim(string.gsub(finish, '((\\?)-(\\?)-?%S+)', function(s, s2, s3)
+		if s3 == '\\' then
+			return '-' .. string.sub(s, 3, #s)
+		elseif s2 == '\\' then
+			return string.sub(s, 2, #s)
+		end
+	end))
 
 	return flags, finish
 end
