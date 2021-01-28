@@ -50,6 +50,7 @@ function Command:__init(name, options)
     self._botPerms = options.botPerms or {}
     self._args = options.args or {}
     self._requiredArgs = 0
+    self._flag = options.flags or options.flag
     for _, opt in ipairs(self._args) do
         if opt.required == true then
             self._requiredArgs = self._requiredArgs + 1
@@ -183,6 +184,10 @@ function set:args(v)
     self._args = v
 end
 
+function set:flag(v)
+    self._flag = v
+end
+
 -- Getters
 
 --[=[@p name string The commands name.]=]
@@ -253,6 +258,11 @@ end
 --[=[@p hooks table The commands hooks.]=]
 function get:hooks()
     return self._hooks
+end
+
+--[=[@p flag boolean Whether or not the command handler should parse flags.]=]
+function get:flag()
+    return self._flag
 end
 
 return Command

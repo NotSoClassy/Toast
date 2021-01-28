@@ -1,6 +1,7 @@
 local util = require 'utils'
 local rex = require 'rex'
 
+local clamp = require 'discordia' .extensions.math.clamp
 local insert, remove, concat, unpack = table.insert, table.remove, table.concat, table.unpack
 local match, f = string.match, string.format
 
@@ -75,6 +76,7 @@ local function parse(msg, cmdArgs, command)
 
     local args = {}
 
+    -- parse
     for i, opt in ipairs(command.args) do
         local arg = cmdArgs[1]
 
@@ -85,7 +87,7 @@ local function parse(msg, cmdArgs, command)
         if arg then
             local type = opt.value or opt.type
 
-            assert(name ~= 'ungrouped', 'Name "ungrouped" is reserved')
+            assert(name ~= 'ungrouped' or name ~= 'flags', 'Name "' .. name .. '" is reserved')
             assert(args[name] == nil, name .. ' name is already in use')
 
             if type == '...' then
@@ -104,7 +106,7 @@ local function parse(msg, cmdArgs, command)
             end
 
             if value and type == 'number' and max then
-                if value > max or value < (min or 1) then
+                if clamp(value, min or 1, max) ~= value then
                     return nil, f('Argument #%d should be a number inbetween %d-%d', i, min, max)
                 end
             end
@@ -112,6 +114,14 @@ local function parse(msg, cmdArgs, command)
             args[name] = value
         elseif default then
             args[name] = type(default) == 'function' and default(msg) or default
+        end
+    end
+
+    -- check depends
+    for i, opt in ipairs(command.args) do
+        local depends = opt.depend or opt.depends
+        if depends and args[opt.name] and not args[depends] then
+            return nil, f('Argument #%d depends the argument #%d (%s) ', i, i+1, depends)
         end
     end
 

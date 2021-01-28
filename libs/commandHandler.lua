@@ -4,6 +4,7 @@ local util = require 'util'
 local class, trim = discordia.class, discordia.extensions.string.trim
 
 local match, gmatch = string.match, string.gmatch
+local concat = table.concat
 
 local function findSub(tbl, q)
     if not q then
@@ -78,6 +79,19 @@ return function(msg)
         return msg:reply(util.error('Slow down, you\'re on cooldown', 'Please wait ' .. util.time(time)))
     end
 
+    -- flag parse
+    local flags
+    if command._flag or (self._toastOptions.alwaysFlags and command._flag ~= false) then
+        local flgs, str = util.flagparse(concat(args, ' '))
+
+        flags = flgs
+        args = {}
+        for s in gmatch(str, '%S+') do
+            table.insert(args, s)
+        end
+    end
+
+    -- arg parser
     if self._toastOptions.advancedArgs and #command.args > 0 then
         local parsed, err = util.argparse(msg, args, command)
 
@@ -86,6 +100,7 @@ return function(msg)
         end
 
         args = parsed
+        args.flags = flags
     end
 
     command.hooks.preCommand(msg)

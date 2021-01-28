@@ -5,7 +5,8 @@
 
 # About
 
-A Framework for [Discordia](https://github.com/SinisterRectus/Discordia)
+A Framework for [Discordia](https://github.com/SinisterRectus/Discordia) <br>
+You can a comparison with other librarys [here](https://sovietkitsune.github.io/SuperToast/topics/comparison/)
 
 # Example
 

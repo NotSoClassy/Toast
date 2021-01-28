@@ -6,6 +6,7 @@ return {
     package = require './package',
     Embed = require './structures/Embed',
     Client = require './structures/Client',
-    argparser = require './argparser',
-    Command = require './structures/Command'
+    Command = require './structures/Command',
+    argparser = require 'argparser',
+    flagparser = require 'flagparser'
 }
