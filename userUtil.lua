@@ -161,11 +161,9 @@ end
 function util.getPrefix(msg)
     local prefix
     for _, pre in pairs(msg.client._prefix) do
-        if type(pre) == 'function' and pre(msg) ~= nil then
-            prefix = pre(msg)
-            break
-        elseif string.find(msg.content, tostring(pre)) == 1 then
-            prefix = pre
+        local p = type(pre) == 'function' and pre(msg) or tostring(pre)
+        if string.find(msg.content, p) == 1 then
+            prefix = p
             break
         end
     end
