@@ -76,6 +76,7 @@ local function parse(msg, cmdArgs, command)
 
     local args = {}
 
+    -- parse
     for i, opt in ipairs(command.args) do
         local arg = cmdArgs[1]
 
@@ -113,6 +114,14 @@ local function parse(msg, cmdArgs, command)
             args[name] = value
         elseif default then
             args[name] = type(default) == 'function' and default(msg) or default
+        end
+    end
+
+    -- check depends
+    for i, opt in ipairs(command.args) do
+        local depends = opt.depend or opt.depends
+        if depends and args[opt.name] and not args[depends] then
+            return nil, f('Argument #%d depends the argument #%d (%s) ', i, i+1, depends)
         end
     end
 
