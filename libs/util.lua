@@ -1,3 +1,4 @@
+local flagparse = require '../flagparser'
 local argparse = require '../argparser'
 local util = require '../userUtil'
 
@@ -55,6 +56,7 @@ return {
 
 	-- parsing
 	argparse = argparse.parse,
+	flagparse = flagparse.parse,
 
 	-- other utils
 	time = util.formatLong,

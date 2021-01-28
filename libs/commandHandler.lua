@@ -4,6 +4,7 @@ local util = require 'util'
 local class, trim = discordia.class, discordia.extensions.string.trim
 
 local match, gmatch = string.match, string.gmatch
+local concat = table.concat
 
 local function findSub(tbl, q)
     if not q then
@@ -79,6 +80,13 @@ return function(msg)
     end
 
     if self._toastOptions.advancedArgs and #command.args > 0 then
+        local flags, str = util.flagparse(concat(args, ' '))
+
+        args = {}
+        for s in gmatch(str, '%S+') do
+            table.insert(args, s)
+        end
+
         local parsed, err = util.argparse(msg, args, command)
 
         if err then
@@ -86,6 +94,7 @@ return function(msg)
         end
 
         args = parsed
+        args.flags = flags
     end
 
     command.hooks.preCommand(msg)

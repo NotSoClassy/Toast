@@ -87,7 +87,7 @@ local function parse(msg, cmdArgs, command)
         if arg then
             local type = opt.value or opt.type
 
-            assert(name ~= 'ungrouped', 'Name "ungrouped" is reserved')
+            assert(name ~= 'ungrouped' or name ~= 'flags', 'Name "' .. name .. '" is reserved')
             assert(args[name] == nil, name .. ' name is already in use')
 
             if type == '...' then
