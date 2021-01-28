@@ -8,6 +8,7 @@ local validOptions = {
 	prefix = {'string', 'table', 'function'},
 	owners = {'string', 'table'},
 	defaultHelp = 'boolean',
+	alwaysFlags = 'boolean',
 	advancedArgs = 'boolean',
 	mentionPrefix = 'boolean',
 	commandHandler = 'function'

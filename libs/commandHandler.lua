@@ -79,14 +79,20 @@ return function(msg)
         return msg:reply(util.error('Slow down, you\'re on cooldown', 'Please wait ' .. util.time(time)))
     end
 
-    if self._toastOptions.advancedArgs and #command.args > 0 then
-        local flags, str = util.flagparse(concat(args, ' '))
+    -- flag parse
+    local flags
+    if command._flag or (self._toastOptions.alwaysFlags and command._flag ~= false) then
+        local flgs, str = util.flagparse(concat(args, ' '))
 
+        flags = flgs
         args = {}
         for s in gmatch(str, '%S+') do
             table.insert(args, s)
         end
+    end
 
+    -- arg parser
+    if self._toastOptions.advancedArgs and #command.args > 0 then
         local parsed, err = util.argparse(msg, args, command)
 
         if err then
