@@ -77,7 +77,7 @@ local function parse(str)
 		::continue::
 	end
 
-	local finish = '' -- luacheck: ignore -- str without flags for arg parser
+	local finish -- str without flags for arg parser
 	finish = trim(gsub(str, [[((?<!\\)\-(?<!\\)\-?\S+\s)(?|"(.+?)"|'(.+?)'|(\S+))?(\s*)]], '')) -- uhh
 	finish = flags[string.match(finish, '%-%-?(%S+)')] and '' or finish -- prolly unstable
 

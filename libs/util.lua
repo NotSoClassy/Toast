@@ -1,5 +1,5 @@
-local flagparse = require '../flagparser'
-local argparse = require '../argparser'
+local flagparse = require 'flagparser'
+local argparse = require 'argparser'
 local util = require '../userUtil'
 
 local concat = table.concat
