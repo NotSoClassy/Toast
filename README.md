@@ -6,7 +6,7 @@
 # About
 
 A Framework for [Discordia](https://github.com/SinisterRectus/Discordia) <br>
-You can a comparison with other librarys [here](https://sovietkitsune.github.io/SuperToast/topics/comparison/)
+You can a comparison with other libraries [here](https://sovietkitsune.github.io/SuperToast/topics/comparison/)
 
 # Example
 
