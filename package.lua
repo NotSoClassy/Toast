@@ -1,6 +1,6 @@
 return {
     name = 'NotSoClassy/toast',
-    version = '1.3.5',
+    version = '1.3.7',
     description = 'A Framework for Discordia',
     tags = {'discordia', 'discord'},
     license = 'MIT',
