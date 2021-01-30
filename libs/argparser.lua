@@ -121,7 +121,7 @@ local function parse(msg, cmdArgs, command)
     for i, opt in ipairs(command.args) do
         local depends = opt.depend or opt.depends
         if depends and args[opt.name] and not args[depends] then
-            return nil, f('Argument #%d depends the argument #%d (%s) ', i, i+1, depends)
+            return nil, f('Argument #%d depends on the argument named "%s"', i, depends)
         end
     end
 

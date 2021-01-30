@@ -77,15 +77,7 @@ local function parse(str)
 		::continue::
 	end
 
-	local finish -- str without flags for arg parser
-	finish = trim(gsub(str, [[((?<!\\)\-(?<!\\)\-?\S+\s)(?|"(.+?)"|'(.+?)'|(\S+))?(\s*)]], '')) -- uhh
-	finish = trim(string.gsub(finish, '((\\?)-(\\?)-?%S+)', function(s, s2, s3)
-		if s3 == '\\' then
-			return '-' .. string.sub(s, 3, #s)
-		elseif s2 == '\\' then
-			return string.sub(s, 2, #s)
-		end
-	end))
+	local finish = trim(gsub(str, [[((?<!\\)\-(?<!\\)\-?\S+\s?)(?|"(.+?)"|'(.+?)'|(\S+))?(\s*)]], '')) -- this removed flags for the arg parser
 
 	return flags, finish
 end
