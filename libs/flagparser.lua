@@ -61,7 +61,7 @@ local function parse(str)
 			local after = getAfter(a, #key+1, #str)
 			local value = getValue(after)
 
-			flags[key] = value
+			flags[string.lower(key)] = value
 
 			last = i
 		elseif s == '-' and (i ~= last + 1) and b[1] ~= '\\' then -- single letter
@@ -71,7 +71,7 @@ local function parse(str)
 			local after = getAfter(a, 2, #str)
 			local value = getValue(after)
 
-			flags[key] = value
+			flags[string.lower(key)] = value
 		end
 
 		::continue::
