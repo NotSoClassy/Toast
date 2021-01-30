@@ -82,10 +82,10 @@ return function(msg)
     -- flag parse
     local flags
     if command._flag or (self._toastOptions.alwaysFlags and command._flag ~= false) then
-        local flgs, str = util.flagparse(concat(args, ' '))
+        local flgs, str = util.flagparser(concat(args, ' '))
 
         flags = flgs
-        args = {}
+        args = { flags = flgs }
         for s in gmatch(str, '%S+') do
             table.insert(args, s)
         end
@@ -93,7 +93,7 @@ return function(msg)
 
     -- arg parser
     if self._toastOptions.advancedArgs and #command.args > 0 then
-        local parsed, err = util.argparse(msg, args, command)
+        local parsed, err = util.argparser(msg, args, command)
 
         if err then
             return msg:reply(util.error('Error with arguments', err))

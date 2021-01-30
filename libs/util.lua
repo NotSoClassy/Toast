@@ -1,5 +1,5 @@
-local flagparse = require 'flagparser'
-local argparse = require 'argparser'
+local flagparser = require 'flagparser'
+local argparser = require 'argparser'
 local util = require '../userUtil'
 
 local concat = table.concat
@@ -56,8 +56,8 @@ return {
 	parseOptions = parseOptions,
 
 	-- parsing
-	argparse = argparse.parse,
-	flagparse = flagparse.parse,
+	argparser = argparser.parse,
+	flagparser = flagparser.parse,
 
 	-- other utils
 	time = util.formatLong,
