@@ -10,6 +10,7 @@ local validOptions = {
 	defaultHelp = 'boolean',
 	alwaysFlags = 'boolean',
 	advancedArgs = 'boolean',
+	customParams = 'table',
 	mentionPrefix = 'boolean',
 	commandHandler = 'function'
 }

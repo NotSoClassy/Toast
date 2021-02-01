@@ -103,9 +103,20 @@ return function(msg)
         args.flags = flags
     end
 
+
+    local customParams = self._toastOptions.customParams
+    local params = {}
+
+    if customParams then
+        for _, v in ipairs(customParams) do
+            local value = type(v) == 'function' and v(msg) or v
+            table.insert(params, value)
+        end
+    end
+
     command.hooks.preCommand(msg)
 
-    local success, err = pcall(command.execute, msg, args, command)
+    local success, err = pcall(command.execute, msg, args, unpack(params))
 
     command.hooks.postCommand(msg, class.type(err) == 'Message' and err or nil)
 

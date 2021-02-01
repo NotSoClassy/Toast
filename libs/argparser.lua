@@ -1,6 +1,6 @@
-local util = require 'utils'
 local rex = require 'rex'
 
+local example = require '../userUtil' .example
 local clamp = require 'discordia' .extensions.math.clamp
 local insert, remove, concat, unpack = table.insert, table.remove, table.concat, table.unpack
 local match, f = string.match, string.format
@@ -69,7 +69,7 @@ end
 
 local function parse(msg, cmdArgs, command)
     if #cmdArgs < command._requiredArgs then
-        return nil, util.example(command)
+        return nil, example(command)
     end
 
     cmdArgs = split(concat(cmdArgs, ' '))
