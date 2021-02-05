@@ -4,7 +4,12 @@ local util = require 'util'
 local class, trim = discordia.class, discordia.extensions.string.trim
 
 local match, gmatch = string.match, string.gmatch
-local concat = table.concat
+local concat, insert = table.concat, table.insert
+local f = string.format
+
+local function parserErr(err)
+    return util.error('Error while parsing', f('Your command should be formatted like\n`%s`', err))
+end
 
 local function findSub(tbl, q)
     if not q then
@@ -44,7 +49,7 @@ return function(msg)
 
     local args = {}
     for arg in gmatch(msgArg, '%S+') do
-        table.insert(args, arg)
+        insert(args, arg)
     end
 
     local command
@@ -79,24 +84,28 @@ return function(msg)
         return msg:reply(util.error('Slow down, you\'re on cooldown', 'Please wait ' .. util.time(time)))
     end
 
-    -- flag parse
+    -- flag parser
     local flags
-    if command._flag or (self._toastOptions.alwaysFlags and command._flag ~= false) then
-        local flgs, str = util.flagparser(concat(args, ' '))
+    if command._flags then
+        local flgs, str = util.flagparser(msg, concat(args, ' '), command)
+
+        if flgs == nil then
+            return msg:reply(parserErr(prefix .. str))
+        end
 
         flags = flgs
         args = { flags = flgs }
         for s in gmatch(str, '%S+') do
-            table.insert(args, s)
+            insert(args, s)
         end
     end
 
     -- arg parser
-    if self._toastOptions.advancedArgs and #command.args > 0 then
+    if #command._args > 0 then
         local parsed, err = util.argparser(msg, args, command)
 
         if err then
-            return msg:reply(util.error('Error with arguments', err))
+            return msg:reply(parserErr(prefix .. err))
         end
 
         args = parsed
@@ -110,8 +119,9 @@ return function(msg)
     if customParams then
         for _, v in ipairs(customParams) do
             local value = type(v) == 'function' and v(msg) or v
-            table.insert(params, value)
+            insert(params, value)
         end
+        insert(params, command)
     end
 
     command.hooks.preCommand(msg)

@@ -49,8 +49,8 @@ function Command:__init(name, options)
     self._userPerms = options.userPerms or {}
     self._botPerms = options.botPerms or {}
     self._args = options.args or {}
+    self._flags = options.flags or options.flag
     self._requiredArgs = 0
-    self._flag = options.flags or options.flag
     for _, opt in ipairs(self._args) do
         if opt.required == true then
             self._requiredArgs = self._requiredArgs + 1
@@ -184,8 +184,8 @@ function set:args(v)
     self._args = v
 end
 
-function set:flag(v)
-    self._flag = v
+function set:flags(v)
+    self._flags = v
 end
 
 -- Getters
@@ -260,9 +260,9 @@ function get:hooks()
     return self._hooks
 end
 
---[=[@p flag boolean Whether or not the command handler should parse flags.]=]
-function get:flag()
-    return self._flag
+--[=[@p flags table The flags used for the type parsing. (Will only be ignored if command.flags is nil)]=]
+function get:flags()
+    return self._flags
 end
 
 return Command

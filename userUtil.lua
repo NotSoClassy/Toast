@@ -4,6 +4,8 @@ local Embed = require './structures/Embed'
 local enums = discordia.enums.permission
 local extensions = discordia.extensions
 
+local f = string.format
+
 local util = {}
 local roles = {
     administrator = {'administrator'},
@@ -188,8 +190,12 @@ function util.example(command)
     local example = command.name
 
     for _, arg in ipairs(command.args) do
-        example = example .. ' ' ..
-                      (arg.required and string.format('<%s: %s>', arg.name, arg.value) or string.format('[%s: %s]', arg.name, arg.value))
+        local name = arg.displayName or arg.name
+        example = example .. ' ' .. (arg.required and f('<%s: %s>', name, arg.value) or f('[%s: %s]', name, arg.value))
+    end
+
+    for _, flg in ipairs(command.flags) do
+        example = example .. ' ' .. (flg.required and f('<--%s: %s>', flg.name, flg.value) or f('[--%s: %s]', flg.name, flg.value))
     end
 
     return example

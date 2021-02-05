@@ -138,4 +138,10 @@ local function removeType(name)
     types[name] = nil
 end
 
-return {removeType = removeType, newType = newType, split = split, parse = parse}
+return {
+    removeType = removeType,
+    newType = newType,
+    split = split,
+    parse = parse,
+    types = types
+}

@@ -1,5 +1,4 @@
--- luacheck: ignore
-exclude_files = {"deps", "examples"}
+exclude_files = {"deps", "examples", "tests"}
 
 ignore = {"2../_.*", "631"}
 

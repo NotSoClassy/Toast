@@ -8,8 +8,6 @@ local validOptions = {
 	prefix = {'string', 'table', 'function'},
 	owners = {'string', 'table'},
 	defaultHelp = 'boolean',
-	alwaysFlags = 'boolean',
-	advancedArgs = 'boolean',
 	customParams = 'table',
 	mentionPrefix = 'boolean',
 	commandHandler = 'function'
@@ -65,5 +63,5 @@ return {
 	owner = util.isOwner,
 	error = util.errorEmbed,
 	prefix = util.getPrefix,
-	example = util.example,
+	example = util.example
 }
