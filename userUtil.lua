@@ -191,11 +191,13 @@ function util.example(command)
 
     for _, arg in ipairs(command.args) do
         local name = arg.displayName or arg.name
-        example = example .. ' ' .. (arg.required and f('<%s: %s>', name, arg.value) or f('[%s: %s]', name, arg.value))
+        local v = arg.value or arg.type
+        example = example .. ' ' .. (arg.required and f('<%s: %s>', name, v) or f('[%s: %s]', name, v))
     end
 
     for _, flg in ipairs(command.flags) do
-        example = example .. ' ' .. (flg.required and f('<--%s: %s>', flg.name, flg.value) or f('[--%s: %s]', flg.name, flg.value))
+        local v = flg.value or flg.type
+        example = example .. ' ' .. (flg.required and f('<--%s: %s>', flg.name, v) or f('[--%s: %s]', flg.name, v))
     end
 
     return example
