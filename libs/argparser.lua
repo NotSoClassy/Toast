@@ -1,9 +1,14 @@
 local rex = require 'rex'
 
-local example = require '../userUtil' .example
 local clamp = require 'discordia' .extensions.math.clamp
 local insert, remove, concat, unpack = table.insert, table.remove, table.concat, table.unpack
 local match, f = string.match, string.format
+
+local example, removeBackslash do
+    local util = require '../userUtil'
+    example = util.example
+    removeBackslash = util.removeBackslash
+end
 
 local function isSnowflake(id)
     return type(id) == 'string' and #id >= 17 and #id <= 64 and not match(id, '%D')
@@ -61,7 +66,8 @@ local types = {
 
 local function split(content)
     local args = {}
-    for arg in rex.gmatch(content, [[(?|"(.+?)"|'(.+?)'|(\S+))]]) do
+    for arg in rex.gmatch(content, [[(?|"(.*?[^\\])"|'(.*?[^\\])'|(\S+))]]) do
+        arg = removeBackslash(arg)
         insert(args, arg)
     end
     return args

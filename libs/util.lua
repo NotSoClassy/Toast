@@ -63,5 +63,6 @@ return {
 	owner = util.isOwner,
 	error = util.errorEmbed,
 	prefix = util.getPrefix,
-	example = util.example
+	example = util.example,
+	removeBackslash = util.removeBackslash
 }

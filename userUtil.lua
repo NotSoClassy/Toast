@@ -195,12 +195,22 @@ function util.example(command)
         example = example .. ' ' .. (arg.required and f('<%s: %s>', name, v) or f('[%s: %s]', name, v))
     end
 
-    for _, flg in ipairs(command.flags) do
+    for _, flg in ipairs(command.flags or {}) do
         local v = flg.value or flg.type
         example = example .. ' ' .. (flg.required and f('<%s%s: %s>', #flg.name == 1 and '-' or '--', flg.name, v) or f('[--%s: %s]', flg.name, v))
     end
 
     return example
+end
+
+function util.removeBackslash(str)
+    return str:gsub('(\\)(\\?)', function(s1, s2)
+		if s1 == '\\' and s2 == '\\' then
+			return '\\'
+		else
+			return ''
+		end
+	end)
 end
 
 return util

@@ -1,7 +1,12 @@
-local example = require '../userUtil' .example
 local types = require 'argparser' .types
 
-local f, gmatch = string.format, string.gmatch
+local f, sub, lower, gmatch = string.format, string.sub, string.lower, string.gmatch
+
+local example, removeBackslash do
+    local util = require '../userUtil'
+    example = util.example
+    removeBackslash = util.removeBackslash
+end
 
 local trim, clamp do
 		local ext = require 'discordia' .extensions
@@ -15,8 +20,8 @@ local gsub, newPatt do
 	gsub = rex.gsub
 end
 
-local matchValue = newPatt [[(?|"(.+?)"|'(.+?)'|(\S+))]]
-local removeFlags = newPatt [[((?<!\\)\-(?<!\\)\-?\S+\s?)(?|"(.+?)"|'(.+?)'|(\S+))?(\s*)]]
+local matchValue = newPatt [[(?|"(.*?[^\\])"|'(.*?[^\\])'|(\S+))]]
+local removeFlags = newPatt [[((?<!\\)\-(?<!\\)\-?\S+\s?)(?|"(.*?[^\\])"|'(.*?[^\\])'|(\S+))?(\s*)]]
 
 -----------------------------------
 
@@ -81,9 +86,10 @@ end
 
 local function iter(str)
 	local i = 0
+
 	return function()
 		i = i + 1
-		local s = string.sub(str, i, i)
+		local s = sub(str, i, i)
 		if i <= #str then
 			return s, i
 		end
@@ -100,7 +106,8 @@ local function getKey(str)
 end
 
 local function getValue(str)
-	return matchValue:match(str) or 'true'
+	local v = matchValue:match(str)
+	return v and removeBackslash(v) or 'true'
 end
 
 -----------------------------------
@@ -109,35 +116,35 @@ local function parse(msg, str, cmd)
 	local flags = {}
 	local last = -1
 
-	local function a(n,i)
-		n = i+n
-		return string.sub(str, n, n)
+	local x
+
+	local function a(n)
+		n = x+n
+		return sub(str, n, n)
 	end
 
-	local function b(n,i)
-		n = i-n
-		return string.sub(str, n, n)
+	local function b(n)
+		n = x-n
+		return sub(str, n, n)
 	end
 
 	for s, i in iter(str) do
-		if s == '-' and a(1, i) == '-' and b(1, i) ~= '\\' then -- multi-letter
-			local allAfter = string.sub(str, i+2)
+		x = i
+		if s == '-' and a(1) == '-' and b(1) ~= '\\' then -- multi-letter
+			local after = sub(str, i+2)
+			local key = lower(getKey(after))
+			local value = getValue(sub(after, #key+2))
 
-			local key = getKey(allAfter)
-			local after = string.sub(str, i+#key+3, #str)
-			local value = getValue(after)
-
-			flags[string.lower(key)] = value
+			flags[key] = value
 
 			last = i
-		elseif s == '-' and (i ~= last + 1) and b(1, i) ~= '\\' then -- single letter
-			if a(2, i) ~= ' ' and a(2, i) ~= '' then goto continue end
-
-			local key = a(1, i)
-			local after = string.sub(str, i+2, #str)
+		elseif s == '-' and (i ~= last + 1) and b(1) ~= '\\' then -- single letter
+			if a(2) ~= ' ' and a(2) ~= '' then goto continue end
+			local key = lower(a(1))
+			local after = sub(str, i+2, #str)
 			local value = getValue(after)
 
-			flags[string.lower(key)] = value
+			flags[key] = value
 		end
 
 		::continue::
