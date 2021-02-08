@@ -197,7 +197,7 @@ function util.example(command)
 
     for _, flg in ipairs(command.flags) do
         local v = flg.value or flg.type
-        example = example .. ' ' .. (flg.required and f('<--%s: %s>', flg.name, v) or f('[--%s: %s]', flg.name, v))
+        example = example .. ' ' .. (flg.required and f('<%s%s: %s>', #flg.name == 1 and '-' or '--', flg.name, v) or f('[--%s: %s]', flg.name, v))
     end
 
     return example

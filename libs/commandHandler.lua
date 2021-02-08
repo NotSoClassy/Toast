@@ -112,7 +112,6 @@ return function(msg)
         args.flags = flags
     end
 
-
     local customParams = self._toastOptions.customParams
     local params = {}
 
