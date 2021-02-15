@@ -87,10 +87,10 @@ return function(msg)
     -- flag parser
     local flags
     if command._flags then
-        local flgs, str = util.flagparser(msg, concat(args, ' '), command)
+        local flgs, str = util.flagparser(concat(args, ' '), msg, command)
 
         if flgs == nil then
-            return msg:reply(parserErr(prefix .. str))
+            return msg:reply(parserErr(str))
         end
 
         flags = flgs
@@ -121,6 +121,8 @@ return function(msg)
             insert(params, value)
         end
         insert(params, command)
+    else
+        params = { command }
     end
 
     command.hooks.preCommand(msg)
