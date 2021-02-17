@@ -1,14 +1,14 @@
 local discordia = require 'discordia'
 local util = require 'util'
 
-local class, trim = discordia.class, discordia.extensions.string.trim
+local class = discordia.class
 
 local match, gmatch = string.match, string.gmatch
 local concat, insert = table.concat, table.insert
 local f = string.format
 
 local function parserErr(err)
-    return util.error('Error while parsing', f('Your command should be formatted like\n`%s`', err))
+    return util.error('Error while parsing, Error message:', f('`%s`', err))
 end
 
 local function findSub(tbl, q)
@@ -39,7 +39,7 @@ return function(msg)
         return
     end
 
-    local cmd, msgArg = match(trim(msg.content:sub(#prefix + 1)), '^(%S+)%s*(.*)')
+    local cmd, msgArg = match(msg.content:sub(#prefix + 1), '^(%S+)%s*(.*)')
 
     if not cmd then
         return
@@ -105,7 +105,7 @@ return function(msg)
         local parsed, err = util.argparser(msg, args, command)
 
         if err then
-            return msg:reply(parserErr(prefix .. err))
+            return msg:reply(parserErr(err))
         end
 
         args = parsed

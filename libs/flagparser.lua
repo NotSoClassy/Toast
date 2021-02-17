@@ -1,3 +1,4 @@
+-- just a warning you shouldn't try to read this
 local clamp = require 'discordia' .extensions.math.clamp
 local example = require '../userUtil' .example
 local types = require 'argparser' .types
@@ -10,7 +11,6 @@ local gsub, newPatt do
 end
 
 local removeFlags = newPatt [[((?<!\\)\-(?<!\\)\-?\S+\s?)(?|"(.*?[^\\])"|'(.*?[^\\])'|(\S+))?(\s*)]]
-
 
 local function parseTypes(msg, flags, command)
 	for _, opt in ipairs(command.flags) do
@@ -90,12 +90,20 @@ end
 
 local function getQuotedValue(str)
 	local s = sub(str, 1, 1)
+	local a = sub(str, 2, 2)
+
 	local isQuote = s == "'" and "'" or s == '"' and '"'
 
 	if isQuote then
 		return eatUntil(sub(str, 2), isQuote)
 	else
-		return eatUntil(str, ' ')
+		local value -- if no value is provided it defaults to 'true'
+		if s == '' or (s == '-' or (a == '-' and s ~= '\\')) then
+			value = 'true'
+		else
+			value = eatUntil(str, ' ')
+		end
+		return value
 	end
 end
 
@@ -130,7 +138,9 @@ local function parse(str, msg, cmd)
 		return nil, err
 	end
 
-	return parsed, gsub(str, removeFlags, '')
+	local noFlags = gsub(str, removeFlags, '') -- because gsub returns 3 values
+
+	return parsed, noFlags
 end
 
 return {
