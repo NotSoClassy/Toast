@@ -5,8 +5,8 @@ return {
     util = require './userUtil',
     package = require './package',
     Embed = require './structures/Embed',
+    Array = require './structures/Array',
     Client = require './structures/Client',
     Command = require './structures/Command',
-    argParser = require 'argparser',
-    flagParser = require 'flagparser'
+    parser = require 'parser',
 }

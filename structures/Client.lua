@@ -6,6 +6,7 @@
 ]=]
 local discordia = require 'discordia'
 local Command = require './Command'
+local Array = require './Array'
 
 local util = require 'util'
 
@@ -21,7 +22,7 @@ function Toast:__init(opt)
 
     self._owners = type(options.owners) == 'table' and options.owners or {options.owners}
     self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
-    self._commands = {options.defaultHelp and require '../commands/help'}
+    self._commands = Array(options.defaultHelp and require '../commands/help')
     self._uptime = discordia.Stopwatch()
     self._toastEvents = {}
     self._toastOptions = options

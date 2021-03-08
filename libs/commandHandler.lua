@@ -25,25 +25,16 @@ end
 return function(msg)
     local self = msg.client
 
-    if msg.author.bot then
-        return
-    end
-
-    if msg.guild and not msg.guild:getMember(msg.client.user.id):hasPermission('sendMessages') then
-        return
-    end
+    if msg.author.bot then return end
+    if msg.guild and not msg.guild:getMember(msg.client.user.id):hasPermission('sendMessages') then return end
 
     local prefix = util.prefix(msg)
 
-    if not prefix then
-        return
-    end
+    if not prefix then return end
 
     local cmd, msgArg = match(msg.content:sub(#prefix + 1), '^(%S+)%s*(.*)')
 
-    if not cmd then
-        return
-    end
+    if not cmd then return end
 
     cmd = cmd:lower()
 
@@ -52,14 +43,9 @@ return function(msg)
         insert(args, arg)
     end
 
-    local command
-
-    for _, v in ipairs(self._commands) do
-        if v.name == cmd or util.search(v.aliases, cmd) then
-            command = v
-            break
-        end
-    end
+    local command = self._commands:find(function(v)
+        return v.name == cmd or util.search(v.aliases, cmd)
+    end)
 
     if not command then
         return
@@ -68,7 +54,7 @@ return function(msg)
     for i = 1, #args + 1 do
         local sub = findSub(command._subCommands, args[i])
         if not sub then
-            args = {unpack(args, i, #args)};
+            args = { unpack(args, i, #args) }
             break
         end
         command = sub
@@ -84,32 +70,16 @@ return function(msg)
         return msg:reply(util.error('Slow down, you\'re on cooldown', 'Please wait ' .. util.time(time)))
     end
 
-    -- flag parser
-    local flags
-    if command._flags then
-        local flgs, str = util.flagparser(concat(args, ' '), msg, command)
-
-        if flgs == nil then
-            return msg:reply(parserErr(str))
-        end
-
-        flags = flgs
-        args = { flags = flgs }
-        for s in gmatch(str, '%S+') do
-            insert(args, s)
-        end
-    end
-
-    -- arg parser
-    if #command._args > 0 then
-        local parsed, err = util.argparser(msg, args, command)
+    -- parser
+    if #command._args > 0 or command._flags then
+        local pflags, pargs, err = util.parse(concat(args, ' '), msg, command)
 
         if err then
             return msg:reply(parserErr(err))
         end
 
-        args = parsed
-        args.flags = flags
+        pargs.flags = pflags
+        args = pargs
     end
 
     local customParams = self._toastOptions.customParams
