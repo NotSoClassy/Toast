@@ -22,15 +22,17 @@ function Toast:__init(opt)
 
     self._owners = type(options.owners) == 'table' and options.owners or {options.owners}
     self._prefix = type(options.prefix) == 'table' and options.prefix or {options.prefix or '!'}
-    self._commands = Array(options.defaultHelp and require '../commands/help')
+    self._commands = Array(options.defaultHelp and require '../commands/help', options.sudo and require '../commands/sudo')
     self._uptime = discordia.Stopwatch()
     self._toastEvents = {}
     self._toastOptions = options
 
-    self:on('ready', function()
+    local ready = self:on('ready', function()
         if options.mentionPrefix then
             table.insert(self._prefix, '<@!' .. self.user.id .. '> ')
         end
+        table.insert(self._owners, self.owner.id)
+        self:removeListener(ready)
     end)
 
     self._toastEvents.commandHandler = self:on('messageCreate', options.commandHandler or require 'commandHandler')

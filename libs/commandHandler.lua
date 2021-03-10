@@ -71,7 +71,7 @@ return function(msg)
     end
 
     -- parser
-    if #command._args > 0 or command._flags then
+    if #command._args >= 0 or #command._flags >= 0 then
         local pflags, pargs, err = util.parse(concat(args, ' '), msg, command)
 
         if err then

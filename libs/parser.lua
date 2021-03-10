@@ -108,7 +108,7 @@ local function check_types(msg, input, command, what)
             assert(vals[name] == nil, name .. ' name is already in use')
 
             if type == '...' then
-                vals[name] = concat({arg, unpack(input, i, #input)}, ' ')
+                vals[name] = {arg, unpack(input, i+1, #input)}
                 input = {}
                 break
             end

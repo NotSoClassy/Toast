@@ -49,7 +49,7 @@ function Command:__init(name, options)
     self._userPerms = options.userPerms or {}
     self._botPerms = options.botPerms or {}
     self._args = options.args or {}
-    self._flags = options.flags or options.flag
+    self._flags = options.flags or options.flag or {}
     self._requiredArgs = 0
     for _, opt in ipairs(self._args) do
         if opt.required == true then
@@ -75,7 +75,6 @@ end
 @d Checks if the user can run the command.
 ]=]
 function Command:check(msg)
-
     if not self._allowDMS and not msg.guild then
         return
     end
@@ -87,9 +86,11 @@ function Command:check(msg)
         return false, 'This is a NSFW only command, please try in a NSFW channel'
     end
 
+    if msg.isSudo then return true end -- here because i don't think sudo should be able to bypass things above
+
     local check, content = self._hooks.check(msg)
     if not check then
-        return false, content
+        return false, content or 'You failed the check.'
     end
 
     if not hasPerms(msg.guild and msg.guild:getMember(msg.client.user.id), msg.channel, self._botPerms) then

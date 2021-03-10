@@ -4,6 +4,7 @@ local util = require '../userUtil'
 local concat = table.concat
 
 local validOptions = {
+	sudo = 'boolean',
 	prefix = {'string', 'table', 'function'},
 	owners = {'string', 'table'},
 	defaultHelp = 'boolean',

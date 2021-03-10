@@ -172,13 +172,14 @@ function util.getPrefix(msg)
     return prefix
 end
 
-function util.isOwner(user)
+function util.isOwner(msg)
+    local user = msg.author
     for _, owner in pairs(user.client.owners) do
         if owner == user.id then
             return true
         end
     end
-    return false
+    return false, 'This command is for owners only.'
 end
 
 function util.errorEmbed(title, content)
