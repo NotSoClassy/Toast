@@ -48,4 +48,9 @@ describe('Parser tests', function()
             {{ name = 'first', value = 'custom' }, { name = 'second', value = 'custom'}}
         ), {flag = 'a custom', flag2 = 'e custom'}, {first = 'a custom', second = 'e custom'})
     end)
+
+    it('should parse quoted args and ignore flags parsing after --', function()
+        assert.are.same(parse('hello -- --c 37 \'quote arg\' "quote arg arg arg" no quote', {}, {}), {},
+        {'--c', '37', 'quote arg', 'quote arg arg arg', 'no', 'quote'})
+    end)
 end)

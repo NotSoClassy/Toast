@@ -3,10 +3,7 @@ local clamp = require 'discordia' .extensions.math.clamp
 local remove, concat, unpack = table.remove, table.concat, table.unpack
 local match, f = string.match, string.format
 
-local example do
-    local util = require '../userUtil'
-    example = util.example
-end
+local example = require 'util' .example
 
 local function isSnowflake(id)
     return type(id) == 'string' and #id >= 17 and #id <= 64 and not match(id, '%D')
@@ -62,19 +59,19 @@ local types = {
     end
 }
 
-local errors = {
+local errors = { -- argument errors
     missing_value = 'Argument #%d should be a %s',
     out_of_range = 'Argument #%d should be a number inbetween %d-%d',
     missing_depends = 'Argument #%d depends on the argument named "%s"'
 }
 
-local ferrors = {
+local ferrors = { -- flag errors
     missing_value = 'Flag %s should be a %s',
     out_of_range = 'Flag %s should be a number inbetween %d-%d',
     missing_depends = 'Flag %s depends on the argument named "%s"'
 }
 
-local function check_types(msg, input, command, what)
+local function checkTypes(msg, input, command, what)
     what = what or 'args'
     local msgs = what == 'args' and errors or what == 'flags' and ferrors
 
@@ -161,18 +158,23 @@ local P, C, S, R, Cp = lpeg.P, lpeg.C, lpeg.S, lpeg.R, lpeg.Cp
 local lmatch = lpeg.match
 local sub, find = string.sub, string.find
 
-local char = R('az', 'AZ', '09')
 local escape = P '\\'
-local apoArg = P"'" * C((1 - P"'")^0) * P"'"
-local quoArg = P'"' * C((1 - P'"')^0) * P'"'
-
 local key do
+    local char = R('az', 'AZ', '09')
 	local dash = P '-' - escape
 	key = (dash * dash^-1) * C(char^1)
 end
 
-local value = (quoArg + apoArg + C((1 - (S'=, ' + '-'))^1))
-local quote = P' '^0 * (quoArg + apoArg + C((1 - (S' ' + '-'))^1)) * Cp()
+local fvalue, value do
+
+    local apoArg = P"'" * C((1 - P"'")^0) * P"'"
+    local quoArg = P'"' * C((1 - P'"')^0) * P'"'
+    local quote = quoArg + apoArg
+    fvalue = (quote + C((1 - (S'=, ' + '-'))^1))
+    value = P' '^0 * (quoArg + apoArg + C((1 - (S' '))^1)) * Cp()
+
+end
+
 
 local function parse(str, msg, command)
 	local flags = {}
@@ -185,7 +187,10 @@ local function parse(str, msg, command)
 
 		if escaped ~= '\\' then
 			local index = lmatch(key, sub(str, s))
-			local val = lmatch(value, sub(str, e+#index+2)) or 'true'
+            
+            if not index then last = last + 3; break end -- matched -- so stop parsing flags
+
+			local val = lmatch(fvalue, sub(str, e+#index+2)) or 'true'
 			local isQuote = sub(str, e+#index+2, e+#index+2)
 
 			out = out .. sub(str, last, s-1)
@@ -199,19 +204,23 @@ local function parse(str, msg, command)
 	local args = {}
 	-- args
 	while true do
-		local v, pos = lmatch(quote, sub(out, last))
+        local space = find(out, '%S', last)
+
+        if not space then break end
+
+		local v, pos = lmatch(value, sub(out, space))
+
 		local isQuote = sub(out, last+1, last+1)
+        isQuote = (isQuote == "'" or isQuote == '"') and 2 or 0
 
-		if not v or #v == 0 then break end
-
-		last = last + #v + 1 + ((isQuote == '"' or isQuote == "'") and 2 or 0)
+		last = last + #v + 1 + isQuote
 		last = pos == last and last + 1 or last
 
 		args[#args+1] = v
 	end
 
-	local pflags, ferr = check_types(msg, flags, command, 'flags')
-	local pargs, err = check_types(msg, args, command, 'args')
+	local pflags, ferr = checkTypes(msg, flags, command, 'flags')
+	local pargs, err = checkTypes(msg, args, command, 'args')
 
 	if ferr then
 		return nil, nil, ferr

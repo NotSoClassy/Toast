@@ -1,4 +1,5 @@
 local discordia = require 'discordia'
+local parse = require 'parser' .parse
 local util = require 'util'
 
 local class = discordia.class
@@ -8,18 +9,25 @@ local concat, insert = table.concat, table.insert
 local f = string.format
 
 local function parserErr(err)
-    return util.error('Error while parsing, Error message:', f('`%s`', err))
+    return util.error(f('`%s`', err), 'Error while parsing, Error message:')
 end
 
 local function findSub(tbl, q)
-    if not q then
-        return
-    end
+    if not q then return end
     for _, v in ipairs(tbl) do
         if v.name == q or util.search(v.aliases, q) then
             return v
         end
     end
+end
+
+local function unpackOther(other, m)
+    local ret = {}
+    for i, v in ipairs(other) do
+        v = type(v) == 'function' and v(m) or v
+        ret[i] = v
+    end
+    return unpack(ret)
 end
 
 return function(msg)
@@ -47,9 +55,7 @@ return function(msg)
         return v.name == cmd or util.search(v.aliases, cmd)
     end)
 
-    if not command then
-        return
-    end
+    if not command then return end
 
     for i = 1, #args + 1 do
         local sub = findSub(command._subCommands, args[i])
@@ -62,17 +68,17 @@ return function(msg)
 
     local check, content = command:check(msg)
     if not check then
-        return msg:reply(util.error(nil, content))
+        return msg:reply(util.error(content))
     end
 
     local onCooldown, time = command:onCooldown(msg.author.id)
     if onCooldown then
-        return msg:reply(util.error('Slow down, you\'re on cooldown', 'Please wait ' .. util.time(time)))
+        return msg:reply(util.error('Please wait ' .. util.format(time), 'Slow down, you\'re on cooldown'))
     end
 
     -- parser
     if #command._args ~= 0 or #command._flags ~= 0 then
-        local pflags, pargs, err = util.parse(concat(args, ' '), msg, command)
+        local pflags, pargs, err = parse(concat(args, ' '), msg, command)
 
         if err then
             return msg:reply(parserErr(err))
@@ -82,29 +88,15 @@ return function(msg)
         args = pargs
     end
 
-    local customParams = self._toastOptions.customParams
-    local params = {}
-
-    if customParams then
-        for _, v in ipairs(customParams) do
-            local value = type(v) == 'function' and v(msg) or v
-            insert(params, value)
-        end
-        insert(params, command)
-    else
-        params = { command }
-    end
-
     command.hooks.preCommand(msg)
 
-    local success, err = pcall(command.execute, msg, args, unpack(params))
+    command:startCooldown(msg.author.id)
+    local success, err = pcall(command.execute, msg, args, unpackOther(self._toastOptions.params, msg))
 
     command.hooks.postCommand(msg, class.type(err) == 'Message' and err or nil)
 
     if not success then
         self:error('ERROR WITH ' .. command.name .. ': ' .. err)
-        msg:reply(util.error(nil, 'Please try this command later'))
-    else
-        command:startCooldown(msg.author.id)
+        msg:reply(util.error('Please try this command later'))
     end
 end
