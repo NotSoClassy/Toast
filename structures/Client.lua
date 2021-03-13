@@ -51,12 +51,12 @@ function Toast:login(token, status)
     self:run(token, status)
 end
 
-local function loopSubCommands(tbl, inh)
+local function loopSubCommands(tbl)
     if not tbl then
         return
     end
     for i, v in ipairs(tbl._subCommands) do
-        tbl.subCommands[i] = class.type(v) == 'Command' and v or Command(v.name)
+        tbl.subCommands[i] = class.type(v) == 'Command' and v or Command(v.name, v)
         tbl.subCommands[i] = loopSubCommands(tbl.subCommands[i])
     end
     return tbl
@@ -70,7 +70,7 @@ end
 ]=]
 function Toast:addCommand(command)
     command = class.type(command) == 'Command' and command or Command(command.name, command)
-    command = loopSubCommands(command, command.inherit) or command
+    command = loopSubCommands(command) or command
 
     insert(self._commands, command)
     self:debug('Command ' .. command.name .. ' has been added')
