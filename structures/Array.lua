@@ -1,7 +1,14 @@
 local Array = {}
 
 local function new(...)
-    return setmetatable({ ... }, { __index = Array, __newindex = function(self, i, v)
+    local arg = { ... }
+    local out = { }
+    for i = 1, select('#', ...) do -- filter nil values
+        if arg[i] ~= nil then
+            table.insert(out, arg[i])
+        end
+    end 
+    return setmetatable(out, { __index = Array, __newindex = function(self, i, v)
         assert(type(i) == 'number', 'The index must be a number')
         rawset(self, i, v)
     end})

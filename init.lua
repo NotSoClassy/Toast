@@ -8,5 +8,6 @@ return {
     Array = require './structures/Array',
     Client = require './structures/Client',
     Command = require './structures/Command',
+    types = require 'typechecker' .types,
     parser = require 'parser'
 }

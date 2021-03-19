@@ -1,5 +1,5 @@
 local discordia = require 'discordia'
-local parse = require 'parser' .parse
+local parse = require 'parser'
 local util = require 'util'
 
 local class = discordia.class
@@ -78,12 +78,12 @@ return function(msg)
 
     -- parser
     if #command._args ~= 0 or #command._flags ~= 0 then
-        local pflags, pargs, err = parse(concat(args, ' '), msg, command)
+        local pargs, pflags = parse(concat(args, ' '), msg, command)
 
-        if err then
-            return msg:reply(parserErr(err))
+        if pargs == nil then
+            return msg:reply(parserErr(pflags))
         end
-
+        
         pargs.flags = pflags
         args = pargs
     end

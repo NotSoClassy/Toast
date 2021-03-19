@@ -1,10 +1,12 @@
 local parser = toast.parser
+local types = toast.types
 
 local function parse(str, flags, args, r)
-    return parser.parse(str, {}, {flags = flags or {}, args = args or {}, _requiredArgs = r or 0})
+    local args, flags = parser(str, {}, {flags = flags or {}, args = args or {}, _requiredArgs = r or 0})
+    return flags, args
 end
 
-parser.types.custom = function(arg)
+types.custom = function(arg)
     return arg:sub(1, 1) .. ' custom'
 end
 
@@ -17,7 +19,7 @@ describe('Parser tests', function()
             {{ name = 'flag', value = 'number' }, { name = 'flag2', value = 'boolean' }} -- built-in types
         ), {flag = 37, flag2 = true})
 
-        assert.are.same(parse('--flag a --flag2 ea', 
+        assert.are.same(parse('--flag a --flag2 ea',
             {{ name = 'flag', value = 'custom' }, { name = 'flag2', value = 'custom'}} -- custom types
         ), {flag = 'a custom', flag2 = 'e custom'})
 
