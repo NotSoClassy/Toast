@@ -13,7 +13,7 @@ You can find a comparison with other libraries [here](https://sovietkitsune.gith
 ```lua
 local toast = require('toast')
 local client = toast.Client {
-    prefix = '!'
+  prefix = '!'
 }
 
 client:addCommand {
@@ -33,4 +33,4 @@ If your bot uses Toast and you want it to be on the list, then make an issue wit
 
 # How to install
 
-Do `lit install NotSoClassy/Toast` in your console, and it should add all the stuff you need!
+Do `lit install NotSoClassy/toast` in your console, and it should add all the stuff you need!

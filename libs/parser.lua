@@ -36,17 +36,16 @@ local function quotes(str)
 end
 
 local function flag(str, short, flags)
-	local _, e, key = str:find('([%a%-0-9]*)')
+	local _, e, key = str:find('([%a%-]*)')
 
 	if not e then return end
 	if key == '' then return end
 
 	local nc = str:sub(e+1, e+1)
+	local isFlag = str:sub(e+2, e+3) == '--'
 
-	if nc == '=' or nc == ' ' then
-		if str:sub(e+2, e+3) == '--' then
-			return key, 'true', e+1
-		elseif short then
+	if nc == '=' or nc == ' ' and not isFlag then
+		if short then
 			local sum = e + 2
 			local pos = sum
 			for i = 1, #key do
@@ -62,7 +61,7 @@ local function flag(str, short, flags)
 			local val, pos = quotes(str:sub(e+2))
 			return key, val, #key + pos + 1
 		end
-	elseif nc == ',' or nc == ';'  or nc == '' then
+	elseif nc == ',' or nc == ';'  or nc == '' or isFlag then
 		if short then
 			for i = 1, #key do
 				flags[key:sub(i, i)] = 'true'
@@ -90,6 +89,7 @@ local function parse(str)
 		if e then
 			local short = e - s == 0
 			local key, val, at = flag(str:sub(e + 1), short, flags)
+
 			if short then
 				pos = e + key + 1
 			else

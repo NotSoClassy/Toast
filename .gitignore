@@ -4,3 +4,4 @@ config.lua
 .vscode
 tests
 docs
+benchmark/

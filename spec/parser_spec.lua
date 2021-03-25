@@ -13,15 +13,15 @@ end
 describe('Parser tests', function()
     it('should parse flags', function()
     
-        assert.are.same(parse('--flag value --flag2 "value 2"'), {flag = 'value', flag2 = 'value 2'}) -- no types
+        assert.are.same(parse('--flag value --flagw "value 2"'), {flag = 'value', flagw = 'value 2'}) -- no types
 
-        assert.are.same(parse('--flag 37 --flag2 true',
-            {{ name = 'flag', value = 'number' }, { name = 'flag2', value = 'boolean' }} -- built-in types
-        ), {flag = 37, flag2 = true})
+        assert.are.same(parse('--flag 37 --flagw true',
+            {{ name = 'flag', value = 'number' }, { name = 'flagw', value = 'boolean' }} -- built-in types
+        ), {flag = 37, flagw = true})
 
-        assert.are.same(parse('--flag a --flag2 ea',
-            {{ name = 'flag', value = 'custom' }, { name = 'flag2', value = 'custom'}} -- custom types
-        ), {flag = 'a custom', flag2 = 'e custom'})
+        assert.are.same(parse('--flag a --flagw ea',
+            {{ name = 'flag', value = 'custom' }, { name = 'flagw', value = 'custom'}} -- custom types
+        ), {flag = 'a custom', flagw = 'e custom'})
 
     end)
 
@@ -38,17 +38,17 @@ describe('Parser tests', function()
     end)
 
     it('should parse flags and args', function()
-        assert.are.same(parse('" arg arg" --flag value nice --flag2 value2'), {flag = 'value', flag2 = 'value2'}, {ungrouped = {' arg arg', 'nice'}}) -- no types
+        assert.are.same(parse('" arg arg" --flag value nice --flagw value2'), {flag = 'value', flagw = 'value2'}, {ungrouped = {' arg arg', 'nice'}}) -- no types
 
         assert.are.same(parse('12 --flag, true -a be',
             {{ name = 'flag', value = 'boolean' }, { name = 'a', value = 'string' }}, -- build-in types
             {{ name = 'n', value = 'number', max = 12, min = 11 }, { name = 'bool', value = 'boolean' }}
-        ), {flag = true, a = 'be'}, { n = 12, bool = true })
+        ), { flag = true, a = 'be' }, { n = 12, bool = true })
 
-        assert.are.same(parse('a ea --flag a --flag2 ea',
-            {{ name = 'flag', value = 'custom' }, { name = 'flag2', value = 'custom'}}, -- custom types
+        assert.are.same(parse('a ea --flag a --flagw ea',
+            {{ name = 'flag', value = 'custom' }, { name = 'flagw', value = 'custom'}}, -- custom types
             {{ name = 'first', value = 'custom' }, { name = 'second', value = 'custom'}}
-        ), {flag = 'a custom', flag2 = 'e custom'}, {first = 'a custom', second = 'e custom'})
+        ), {flag = 'a custom', flagw = 'e custom'}, {first = 'a custom', second = 'e custom'})
     end)
 
     it('should parse quoted args and ignore flags parsing after --', function()
