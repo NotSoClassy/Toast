@@ -103,7 +103,7 @@ local function prefix(msg)
     local prefix
     for _, pre in pairs(msg.client.prefix) do
         local p = type(pre) == 'function' and pre(msg) or tostring(pre)
-        if string.find(msg.content, p) == 1 then
+        if string.find(msg.content, p, 1, true) == 1 then
             prefix = p
             break
         end

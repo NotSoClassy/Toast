@@ -22,6 +22,7 @@ local function findSub(tbl, q)
 end
 
 local function unpackOther(other, m)
+    if not other then return end
     local ret = {}
     for i, v in ipairs(other) do
         v = type(v) == 'function' and v(m) or v
