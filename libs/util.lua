@@ -30,7 +30,7 @@ local function parseOptions(options)
 						error('The ' .. i .. ' option should be a (' .. concat(optionType, ' | ') .. ')')
 					end
 				end
-			elseif optType ~= 'any' then
+			elseif optionType ~= 'any' then
 				assert(type(v) == optionType, 'The ' .. i .. ' option should be a (' .. optionType .. ')')
 			end
 			toastOptions[i] = v
@@ -57,22 +57,22 @@ local function error(content, title)
 end
 
 local function example(command)
-    local example = command.name
+    local ret = command.name
 
 	for _, arg in ipairs(command.args) do
 		local name = arg.displayName or arg.name
 		local v = arg.value or arg.type
-		example = example .. ' ' .. (arg.required and f('<%s: %s>', name, v) or f('[%s: %s]', name, v))
+		ret = ret .. ' ' .. (arg.required and f('<%s: %s>', name, v) or f('[%s: %s]', name, v))
 	end
 
 
 	for _, flg in ipairs(command.flags or {}) do
 		local v = flg.value or flg.type
 		local d = #flg.name == 1 and '-' or '--'
-		example = example .. ' ' .. (flg.required and f('<%s%s: %s>', d, flg.name, v) or f('[%s%s: %s]', d, flg.name, v))
+		ret = ret .. ' ' .. (flg.required and f('<%s%s: %s>', d, flg.name, v) or f('[%s%s: %s]', d, flg.name, v))
 	end
 
-    return example
+    return ret
 end
 
 local function plural(n, name)
@@ -100,15 +100,15 @@ local function format(milliseconds)
 end
 
 local function prefix(msg)
-    local prefix
+    local ret
     for _, pre in pairs(msg.client.prefix) do
         local p = type(pre) == 'function' and pre(msg) or tostring(pre)
         if string.find(msg.content, p, 1, true) == 1 then
-            prefix = p
+            ret = p
             break
         end
     end
-    return prefix
+    return ret
 end
 
 local function compareRoles(role1, role2)

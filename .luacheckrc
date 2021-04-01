@@ -1,5 +1,5 @@
-exclude_files = {"deps", "examples", "tests"}
-ignore = {"2../_.*", "631"}
+exclude_files = {"deps", "examples", "tests", "spec}
+ignore = {"2../_.*"}
 std = "luajit"
 
 globals = {
@@ -9,5 +9,3 @@ globals = {
 stds.tests = {
   globals = { "toast" }
 }
-
-files["**/spec/**/*_spec.lua"] = "busted+tests+luajit"

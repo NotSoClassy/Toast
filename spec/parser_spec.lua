@@ -12,7 +12,7 @@ end
 
 describe('Parser tests', function()
     it('should parse flags', function()
-    
+
         assert.are.same(parse('--flag value --flagw "value 2"'), {flag = 'value', flagw = 'value 2'}) -- no types
 
         assert.are.same(parse('--flag 37 --flagw true',
