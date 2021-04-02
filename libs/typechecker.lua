@@ -106,7 +106,7 @@ local function parse(input, msg, command, what)
             if vals[name] ~= nil then error(name .. ' name is already in use') end
 
             if type == '...' then
-                vals[name] = {arg, unpack(input, 1, #input)}
+                vals[name] = {unpack(input, 1, #input)}
                 input = {}
                 break
             end
