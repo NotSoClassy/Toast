@@ -117,21 +117,21 @@ local function typedParse(str, msg, command)
 	if args == nil then
 		return nil, flags
 	end
-	
+
 	local parsed, err = typeCheck(args, msg, command, 'args')
-	
+
 	if parsed == nil then
 		return nil, err
 	end
 
 	args = parsed
-	
+
 	parsed, err = typeCheck(flags, msg, command, 'flags')
 
 	if parsed == nil then
 		return nil, err
 	end
-	
+
 	flags = parsed
 
 	return args, flags

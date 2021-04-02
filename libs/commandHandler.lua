@@ -84,7 +84,7 @@ return function(msg)
         if pargs == nil then
             return msg:reply(parserErr(pflags))
         end
-        
+
         pargs.flags = pflags
         args = pargs
     end

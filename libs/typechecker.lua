@@ -1,5 +1,5 @@
 local clamp = require 'discordia' .extensions.math.clamp
-local remove, concat, unpack = table.remove, table.concat, table.unpack
+local remove, unpack = table.remove, table.unpack
 local match, f = string.match, string.format
 
 local example = require 'util' .example
@@ -102,16 +102,16 @@ local function parse(input, msg, command, what)
         if arg then
             local type = opt.value or opt.type
 
-            if name == 'ungrouped' or name == 'flags' then error('Name "' .. name .. '" is reserved') end 
+            if name == 'ungrouped' or name == 'flags' then error('Name "' .. name .. '" is reserved') end
             if vals[name] ~= nil then error(name .. ' name is already in use') end
 
             if type == '...' then
-                vals[name] = {arg, unpack(input, i+1, #input)}
+                vals[name] = {arg, unpack(input, 1, #input)}
                 input = {}
                 break
             end
 
-            if what == 'args' then remove(input, i) else input[name] = nil end
+            if what == 'args' then remove(input, 1) else input[name] = nil end
 
             local check = assert(types[type], 'No type found for ' .. type)
             local value = check(arg, msg)
@@ -136,7 +136,7 @@ local function parse(input, msg, command, what)
     for i, opt in ipairs(command) do
         local depends = opt.depend or opt.depends
         if depends and vals[opt.name] and not vals[depends] then
-            return nil, f(msgs.missing_depends, what == 'flags' and name or i, depends)
+            return nil, f(msgs.missing_depends, what == 'flags' and opt.name or i, depends)
         end
     end
 

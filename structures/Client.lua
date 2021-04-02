@@ -26,8 +26,9 @@ function Toast:__init(opt)
     self._uptime = discordia.Stopwatch()
     self._toastEvents = {}
     self._toastOptions = options
-    
-    local ready = self:on('ready', function()
+
+    local ready
+    ready = self:on('ready', function()
         if options.mentionPrefix then
             table.insert(self._prefix, '<@!' .. self.user.id .. '> ')
         end

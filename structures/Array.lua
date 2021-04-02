@@ -7,7 +7,7 @@ local function new(...)
         if arg[i] ~= nil then
             table.insert(out, arg[i])
         end
-    end 
+    end
     return setmetatable(out, { __index = Array, __newindex = function(self, i, v)
         assert(type(i) == 'number', 'The index must be a number')
         rawset(self, i, v)

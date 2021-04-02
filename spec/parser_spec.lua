@@ -2,7 +2,7 @@ local parser = toast.parser
 local types = toast.types
 
 local function parse(str, flags, args, r)
-    local args, flags = parser(str, {}, {flags = flags or {}, args = args or {}, _requiredArgs = r or 0})
+    args, flags = parser(str, {}, {flags = flags or {}, args = args or {}, _requiredArgs = r or 0})
     return flags, args
 end
 
@@ -12,7 +12,6 @@ end
 
 describe('Parser tests', function()
     it('should parse flags', function()
-
         assert.are.same(parse('--flag value --flagw "value 2"'), {flag = 'value', flagw = 'value 2'}) -- no types
 
         assert.are.same(parse('--flag 37 --flagw true',
@@ -28,7 +27,7 @@ describe('Parser tests', function()
     it('should parse args', function()
         assert.are.same(parse('a " b c d " \'e d f\''), {}, {'a', ' b c d ', 'e d f'}) -- no types
 
-        assert.are.same(parse('37 true abc', nil, 
+        assert.are.same(parse('37 true abc', nil,
             {{ name = 'n', value = 'number' }, { name = 'bool', value = 'boolean' }} -- built-in types
         ), {}, {n = 37, bool = true, ungrouped = {'abc'}})
 
