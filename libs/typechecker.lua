@@ -32,7 +32,7 @@ local types = {
         if not isSnowflake(id) then
             return
         end
-        return msg:getUser(id)
+        return msg.client:getUser(id)
     end,
 
     member = function(arg, msg)
