@@ -30,6 +30,7 @@ client:login('TOKEN')
 
 If your bot uses Toast and you want it to be on the list, then make an issue with the bot info.
 * [Invicta](https://github.com/NotSoClassy/Invicta)
+* [Sweet Pie](https://github.com/CozzyBro2/sweetpie)
 
 # How to install
 
